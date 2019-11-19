@@ -1,11 +1,13 @@
+var GAME_WIDTH = 500; 
+var GAME_HEIGHT = 500;
+
 var gameport = document.getElementById("gameport");
 
-var renderer = PIXI.autoDetectRenderer({width: 500, height: 500, backgroundColor: 0x055D07});
+var renderer = PIXI.autoDetectRenderer({width: GAME_WIDTH, height: GAME_HEIGHT, backgroundColor: 0x055D07});
 gameport.appendChild(renderer.view);
 
 PIXI.SCALE_MODES.DEFAULT = PIXI.SCALE_MODES.NEAREST;
 
-var GAME_WIDTH = 500; 
 /*
     Create game scene variables 
 */
