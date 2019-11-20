@@ -1,43 +1,75 @@
+var GAME_WIDTH = 500; 
+var GAME_HEIGHT = 500;
+
 var gameport = document.getElementById("gameport");
 
-var renderer = PIXI.autoDetectRenderer({width: 500, height: 500, backgroundColor: 0x055D07});
+var renderer = PIXI.autoDetectRenderer({width: GAME_WIDTH, height: GAME_HEIGHT, backgroundColor: 0x055D07});
 gameport.appendChild(renderer.view);
 
 PIXI.SCALE_MODES.DEFAULT = PIXI.SCALE_MODES.NEAREST;
 
+/*
+    Create game scene variables 
+*/
+var openingScene, gameScene_1, gameScene_2, gameScene_3, 
+    gameScene_4, instructionScene, gameOverScene, creditScene;
+
+/*
+    Menu button variables 
+*/
+var start_button, instruction_button, credits_button, 
+    quit_game_button, credits, gameover, quit_credits_button, 
+    quit_game_over_button, quit_instructions_button;
+
+/*
+    Create end variables 
+*/
+var goodJob, youWin, next, quit_game_button_2, quit_game_button_3, quit_game_button_4;
+
+/*
+    Create Player 1 variables 
+*/
+var sprite1_bottom, sprite1_left_side, sprite1_right_side, sprite1_top;
+
+/*
+    Create Player 2 variables 
+*/
+var sprite2_bottom, sprite2_left_side, sprite2_right_side, sprite2_top;
+
+/*
+    Create collision variables  
+*/
+var hitFromAbove, hitFromBelow, hitFromLeft, hitFromRight;
+
+
 // our menu that will offer the player to 'play', see 'instructions', or see 'credits'
-var openingScene = new PIXI.Container();
+openingScene = new PIXI.Container();
 openingScene.visible = true;
 
-var gameScene_1 = new PIXI.Container();
+gameScene_1 = new PIXI.Container();
 gameScene_1.visible = false;
 
-var gameScene_2 = new PIXI.Container();
+gameScene_2 = new PIXI.Container();
 gameScene_1.visible = false;
 
-var gameScene_3 = new PIXI.Container();
+gameScene_3 = new PIXI.Container();
 gameScene_1.visible = false;
 
-var gameScene_4 = new PIXI.Container();
+gameScene_4 = new PIXI.Container();
 gameScene_1.visible = false;
 
-var instructionScene = new PIXI.Container();
+instructionScene = new PIXI.Container();
 instructionScene.visible = false;
 
-var gameOverScene = new PIXI.Container();
+gameOverScene = new PIXI.Container();
 gameOverScene.visible = false;
 
-var creditScene = new PIXI.Container();
+creditScene = new PIXI.Container();
 gameOverScene.visible = false;
 
 PIXI.loader
     .load(setup);
 
-var start_button, instruction_button, credits_button, 
-    quit_game_button, credits, gameover, quit_credits_button, 
-    quit_game_over_button, quit_instructions_button;
-
-var goodJob, youWin, next, quit_game_button_2, quit_game_button_3, quit_game_button_4;
 
 // This will initialize all our sprites and start our gameloop
 function setup()
@@ -45,9 +77,9 @@ function setup()
     openingScene.interactive = true;
     openingScene.visible = true;
 
-    start_button = new PIXI.Sprite(PIXI.Texture.from("Sprites/Sprite_Start_Button.png"));
-    instruction_button = new PIXI.Sprite(PIXI.Texture.from("Sprites/Sprite_How_To_Play.png"));
-    credits_button = new PIXI.Sprite(PIXI.Texture.from("Sprites/Sprite_Credits_Button.png"));
+    start_button = new PIXI.Sprite(PIXI.Texture.from("Sprites/Menu_Buttons/Sprite_Start_Button.png"));
+    instruction_button = new PIXI.Sprite(PIXI.Texture.from("Sprites/Menu_Buttons/Sprite_How_To_Play.png"));
+    credits_button = new PIXI.Sprite(PIXI.Texture.from("Sprites/Menu_Buttons/Sprite_Credits_Button.png"));
 
     openingScene.addChild(start_button);
     openingScene.addChild(instruction_button);
@@ -78,7 +110,7 @@ function setup()
     instructionScene.interactive = false;
     instructionScene.visible = false;
 
-    quit_instructions_button = new PIXI.Sprite(PIXI.Texture.from("Sprites/Sprite_Quit.png"));
+    quit_instructions_button = new PIXI.Sprite(PIXI.Texture.from("Sprites/Menu_Buttons/Sprite_Quit.png"));
 
     instructionScene.addChild(quit_instructions_button);
     quit_instructions_button.anchor.x = .5;
@@ -88,13 +120,13 @@ function setup()
     
     quit_instructions_button.interactive = false;
 
-    instructions = new PIXI.Sprite(PIXI.Texture.from("Sprites/Sprite_Instructions.png"));
+    instructions = new PIXI.Sprite(PIXI.Texture.from("Sprites/Menu_Buttons/Sprite_Instructions.png"));
 
-    instructionScene.addChild(instructions);
-    instructions.anchor.x = .5;
-    instructions.anchor.y = .5;
-    instructions.position.x = 250;
-    instructions.position.y = 250;
+    // instructionScene.addChild(instructions);
+    // instructions.anchor.x = .5;
+    // instructions.anchor.y = .5;
+    // instructions.position.x = 250;
+    // instructions.position.y = 250;
 
     /*
             END GAME SCENE SET UP  
@@ -102,7 +134,7 @@ function setup()
     gameOverScene.interactive = false;
     gameOverScene.visible = false;
 
-    gameover = new PIXI.Sprite(PIXI.Texture.from("Sprites/Sprite_Game_Over.png"));
+    gameover = new PIXI.Sprite(PIXI.Texture.from("Sprites/Menu_Buttons/Sprite_Game_Over.png"));
     gameOverScene.addChild(gameover);
 
     gameover.anchor.x = .5;
@@ -110,7 +142,7 @@ function setup()
     gameover.position.x = 250;
     gameover.position.y = 250;
 
-    quit_game_over_button = new PIXI.Sprite(PIXI.Texture.from("Sprites/Sprite_Quit.png"));
+    quit_game_over_button = new PIXI.Sprite(PIXI.Texture.from("Sprites/Menu_Buttons/Sprite_Quit.png"));
 
     gameOverScene.addChild(quit_game_over_button);
     quit_game_over_button.anchor.x = .5;
@@ -128,9 +160,9 @@ function setup()
     creditScene.visible = false;
 
     let credits_text = new PIXI.Text(
-        'CREDITS\n\n Samantha Muellner, Kyle Watson, Jacob, and Stephen',
+        'CREDITS\n\n Samantha Muellner, Kyle Watson, \nJacob Kaufman, and Steven Enriquez',
         {fontFamily : "\"Courier New\", Courier, monospace",
-            fontSize: 50,
+            fontSize: 22,
             fontWeight: "bold",
             fill : ["#fa0"],
             align : 'center'});
@@ -139,9 +171,9 @@ function setup()
     credits_text.y = 200;
     credits_text.anchor.x = .5;
     credits_text.anchor.y = .5;
-    creditScene.addChild(title_text);
+    creditScene.addChild(credits_text);
 
-    quit_credits_button = new PIXI.Sprite(PIXI.Texture.from("Sprites/Sprite_Quit.png"));
+    quit_credits_button = new PIXI.Sprite(PIXI.Texture.from("Sprites/Menu_Buttons/Sprite_Quit.png"));
 
     creditScene.addChild(quit_credits_button);
     quit_credits_button.anchor.x = .5;
@@ -263,33 +295,33 @@ function instructionHandler(e)
 
 function collisionBetween(sprite1, sprite2)
 {
-    var sprite1_bottom = sprite1.y + sprite1.height/4,
-        sprite1_top = sprite1.y - sprite1.height/4,
-        sprite1_right_side = sprite1.x + sprite1.width/2,
-        sprite1_left_side = sprite1.x - sprite1.width/2;
+    sprite1_bottom = sprite1.y + sprite1.height/4;
+    sprite1_top = sprite1.y - sprite1.height/4;
+    sprite1_right_side = sprite1.x + sprite1.width/2;
+    sprite1_left_side = sprite1.x - sprite1.width/2;
 
-    var sprite2_bottom = sprite2.y + sprite2.height/4,
-        sprite2_top = sprite2.y - sprite2.height/4,
-        sprite2_right_side = sprite2.x + sprite2.width,
-        sprite2_left_side = sprite2.x - sprite2.width/6;
+    sprite2_bottom = sprite2.y + sprite2.height/4;
+    sprite2_top = sprite2.y - sprite2.height/4;
+    sprite2_right_side = sprite2.x + sprite2.width;
+    sprite2_left_side = sprite2.x - sprite2.width/6;
 
 
-    var hitFromAbove = (sprite1_bottom >= sprite2_top) 
+    hitFromAbove = (sprite1_bottom >= sprite2_top) 
                         && (sprite1_top <= sprite2_top)
                         && (sprite1.x > sprite2_left_side) 
                         && (sprite1.x < sprite2_right_side);
 
-    var hitFromBelow = (sprite1_top <= sprite2_bottom) 
+    hitFromBelow = (sprite1_top <= sprite2_bottom) 
                         && (sprite1_bottom >= sprite2_bottom) 
                         && (sprite1.x > sprite2_left_side) 
                         && (sprite1.x < sprite2_right_side);
 
-    var hitFromLeft = (sprite1_right_side >= sprite2_left_side) 
+    hitFromLeft = (sprite1_right_side >= sprite2_left_side) 
                         && (sprite1_left_side <= sprite2_left_side)
                         && (sprite1.y > sprite2_top) 
                         && (sprite1.y < sprite2_bottom);
 
-    var hitFromRight = (sprite1_left_side <= sprite2_right_side) 
+    hitFromRight = (sprite1_left_side <= sprite2_right_side) 
                         && (sprite1_right_side >= sprite2_right_side)
                         && (sprite1.y > sprite2_top) 
                         && (sprite1.y < sprite2_bottom);
