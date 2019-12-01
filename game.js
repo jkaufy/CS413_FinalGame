@@ -8,11 +8,13 @@ gameport.appendChild(renderer.view);
 
 PIXI.SCALE_MODES.DEFAULT = PIXI.SCALE_MODES.NEAREST;
 
+var beginWave = true;
+
 /*
     Create game scene variables 
 */
 var openingScene, gameScene_1, gameScene_2, gameScene_3, 
-    gameScene_4, instructionScene, gameOverScene, creditScene;
+    gameScene_4, instructionScene, gameOverScene, creditScene, inventoryScene;
 
 /*
     Menu button variables 
@@ -49,8 +51,8 @@ openingScene.visible = true;
 gameScene_1 = new PIXI.Container();
 gameScene_1.visible = false;
 
-gameScene_2 = new PIXI.Container();
-gameScene_1.visible = false;
+iventoryScene = new PIXI.Container();
+iventoryScene = false;
 
 gameScene_3 = new PIXI.Container();
 gameScene_1.visible = false;
@@ -65,7 +67,10 @@ gameOverScene = new PIXI.Container();
 gameOverScene.visible = false;
 
 creditScene = new PIXI.Container();
-gameOverScene.visible = false;
+creditScene.visible = false;
+
+inventoryScene = new PIXI.Container();
+inventoryScene.visible = false;
 
 PIXI.loader
     .load(setup);
@@ -174,6 +179,7 @@ function setup()
     creditScene.addChild(credits_text);
 
     quit_credits_button = new PIXI.Sprite(PIXI.Texture.from("Sprites/Menu_Buttons/Sprite_Quit.png"));
+    
 
     creditScene.addChild(quit_credits_button);
     quit_credits_button.anchor.x = .5;
@@ -183,7 +189,14 @@ function setup()
     
     quit_credits_button.interactive = false;
 
+    quit_game_button = new PIXI.Sprite(PIXI.Texture.from("Sprites/Menu_Buttons/Sprite_Quit.png"));
+    gameScene_1.addChild(quit_game_button);
+     
+    player = new PIXI.Sprite(PIXI.Texture.from("Sprites/Male_Player/Male_Player1.png"));
+    gameScene_1.addChild(player);
     
+    quit_game_inventory = new PIXI.Sprite(PIXI.Texture.from("Sprites/Menu_Buttons/Sprite_Quit.png"));
+    inventoryScene.addChild(quit_game_inventory);
 
     animate();
 }
@@ -267,6 +280,7 @@ function quit_gameover()
     gameOverScene.visible = false;
     openingScene.interactive = true;
     openingScene.visible = true;
+    inve
 
     renderer.render(openingScene);
 }
@@ -334,6 +348,70 @@ function finished()
     playCredits();
 }
 
+var zombies = [];
+var inventoryPage = false;
+var amount_of_zombies  = 10;
+
+var bullet_speed = 5;
+var bullets = [];
+
+var golds = [];
+var silvers = [];
+var bronzes = [];
+
+var amount_of_items = 10;
+
+var zombieSpeed = .2;
+
+
+function startWave ()
+{
+    for (index  = 0; index < amount_of_zombies; index++)
+    {
+        zombie = new PIXI.Sprite(PIXI.Texture.from("Sprites/Monsters/Golems/Gold_Golum_Sword1.png"));
+        zombies.push(zombie);
+
+        zombie.x = (Math.random() * 400);
+        zombie.y = (Math.random()* 400);
+        gameScene_1.addChild(zombie);
+    }
+
+    var item;
+
+    /*for (index = 0; index < amount_of_items; index++)
+    {
+        item = (Math.random() * 3) | 0;
+
+        if(item == 0)
+        {
+            gold = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Gold_Bar.png"));
+        }
+    }*/
+
+
+    beginWave = false;
+    amount_of_zombies += 2;
+}
+
+function moveZombies( zombie )
+{
+    if(zombie.position.x < player.position.x) {
+        zombie.position.x = zombie.position.x + 1 * zombieSpeed;
+      }
+      // move the enemy left
+      else if(zombie.position.x > player.position.x) {
+        zombie.position.x = zombie.position.x - 1 * zombieSpeed;
+      }
+      // move the enemy down
+      if(zombie.position.y < player.position.y) {
+        zombie.position.y = zombie.position.y + 1 * zombieSpeed;
+      }
+      // move the enemy up
+      else if(zombie.position.y > player.position.y) {
+        zombie.position.y = zombie.position.y - 1 * zombieSpeed;
+      }
+}
+
 function animate()
 {
     requestAnimationFrame(animate);
@@ -358,47 +436,42 @@ function animate()
 
         // do something
 
-        next.on('mousedown', setUpSceneTwo);
+        if (inventoryPage)
+        {
+            quit_game_inventory.interactive = true;
+            quit_game_inventory.on('mousedown', quit);
+            
+            document.addEventListener('keydown', inventoryPageHandler);
 
-        quit_game_button.interactive = true;
-        quit_game_button.on('mousedown', quit);
-        document.addEventListener('keydown', keydownHandler);
+            renderer.render(inventoryScene);
+        }
+        else
+        {
+            quit_game_button.interactive = true;
+            quit_game_button.on('mousedown', quit);
+    
+            if (beginWave == true)
+            {
+            
+                // count down the wave
+    
+                // begin wave
+                startWave();
+    
+            }
+    
+            document.addEventListener('keydown', keydownHandler);
 
-        renderer.render(gameScene_1);
+            for (index = 0; index < zombies.length; index++)
+            {
+                 // move the enemy right
+                 moveZombies(zombies[index]);
+            }
+    
+            renderer.render(gameScene_1);
+        }
+
     }
-
-    // HANDLING SCENE 2
-    else if(gameScene_2.interactive)
-    {
-        // create if-statement that will end game by calling quit()
-
-        // do something
-
-        next.on('mousedown', setUpSceneTwo);
-
-        quit_game_button.interactive = true;
-        quit_game_button.on('mousedown', quit);
-        document.addEventListener('keydown', keydownHandler);
-
-        renderer.render(gameScene_2);
-    }
-
-    //HANDLING SCENE 3
-    else if(gameScene_3.interactive)
-    {
-        // create if-statement that will end game by calling quit()
-
-        // do something
-
-        next.on('mousedown', setUpSceneTwo);
-
-        quit_game_button.interactive = true;
-        quit_game_button.on('mousedown', quit);
-        document.addEventListener('keydown', keydownHandler);
-
-        renderer.render(gameScene_4);
-    }
-
     else if(instructionScene.interactive)
     { 
         quit_instructions_button.interactive = true;
@@ -435,22 +508,46 @@ function keydownHandler(e)
 {
     if (e.keyCode == 65) //A //LEFT
     {
-        
+        player.x -= 10;
     }
-
     else if (e.keyCode == 68) //D //RIGHT
     {
-            
+        player.x += 10;
     }
-
     else if (e.keyCode == 83) //S //DOWN
     {
-           
+        player.y += 10;
     }
-
     else if (e.keyCode == 87) //W //UP
     {
-            
+        player.y -= 10;
+    }
+    else if (e.keyCode == 73)
+    {
+        inventoryPage = true;
+
+        inventoryScene.visible = true;
+        inventoryScene.interactive = true;
+
+        renderer.render(inventoryScene);
+
+        document.removeEventListener('keydown', keydownHandler);
+    }
+}
+
+function inventoryPageHandler(e)
+{
+    if (e.keyCode == 73)
+    {
+        inventoryPage = false;
+        console.log("world");
+
+        inventoryScene.visible = false;
+        inventoryScene.interactive = false;
+
+        renderer.render(gameScene_1);
+
+        document.removeEventListener('keydown', inventoryPageHandler);
     }
 }
 
