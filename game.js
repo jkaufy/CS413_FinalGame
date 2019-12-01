@@ -16,14 +16,14 @@ var beginWave = true;
 var openingScene, gameScene_1, gameScene_2, gameScene_3, 
     gameScene_4, instructionScene, gameOverScene, creditScene;
 
-
-
 /*
     Inventory Variables
 */
 
 var inventory = {}, inventoryScene, heal_button, upgrade_button, health_button, 
     weapon_button, armor_button, description_box, inventory_box;
+
+var heal_text, armor_text, upgrade_text, health_text, weapon_text;
 
 /*
     Menu button variables 
@@ -32,7 +32,8 @@ var start_button, instruction_button, credits_button,
     quit_game_button, credits, gameover, quit_credits_button, 
     quit_game_over_button, quit_instructions_button;
 
-var title_text, male, female, female_character, male_character, character_r, character_l;
+var title_text, male, female, female_character, male_character, character_r, character_l, 
+    heart_1, heart_2, heart_3, heart_4, heart_5, heart_6, heart_count;
 
 /*
     Create end variables 
@@ -262,8 +263,12 @@ function setup()
     inventory_title.anchor.y = 0;
     inventoryScene.addChild(inventory_title);
     
-    inventory_box = new PIXI.Sprite(PIXI.Texture.from("Sprites/Instruction_Buttons/Inventory_Box.png"));    
-
+    inventory_box = new PIXI.Sprite(PIXI.Texture.from("Sprites/Instruction_Buttons/Inventory_Box.png"));
+    inventoryScene.addChild(inventory_box);
+    inventory_box.anchor.x = .5;
+    inventory_box.anchor.y = 0;
+    inventory_box.position.x = inventory_title.x;
+    inventory_box.position.y = inventory_title.y + 30;
 
     let description = new PIXI.Text(
         'DESCRIPTION',
@@ -286,11 +291,47 @@ function setup()
     description_box.position.x = description.x;
     description_box.position.y = description.y + 30;
 
+    heal_text, armor_text, upgrade_text, health_text, weapon_text;
+
     heal_button = new PIXI.Sprite(PIXI.Texture.from("Sprites/Instruction_Buttons/Heal_Button.png")); 
+    heal_button.position.x = description_box.position.x;
+    heal_button.position.y = description_box.position.y + 300;
+    heal_button.anchor.x = .5;
+    heal_button.anchor.y = .5;
+    heal_button.scale.set(1.5, 1.5);
+    inventoryScene.addChild(heal_button);
+
     upgrade_button = new PIXI.Sprite(PIXI.Texture.from("Sprites/Instruction_Buttons/Upgrades.png"));
+    upgrade_button.position.x = heal_button.position.x;
+    upgrade_button.position.y = heal_button.position.y + 70;
+    upgrade_button.anchor.x = .5;
+    upgrade_button.anchor.y = .5;
+    upgrade_button.scale.set(1.5, 1.5);
+    inventoryScene.addChild(upgrade_button);
+
     health_button = new PIXI.Sprite(PIXI.Texture.from("Sprites/Instruction_Buttons/Health.png"));
+    health_button.position.x = upgrade_button.position.x;
+    health_button.position.y = upgrade_button.position.y + 70;
+    health_button.anchor.x = .5;
+    health_button.anchor.y = .5;
+    health_button.scale.set(1.5, 1.5);
+    inventoryScene.addChild(health_button);
+
     weapon_button = new PIXI.Sprite(PIXI.Texture.from("Sprites/Instruction_Buttons/Weapon.png"));
-    armor_button = = new PIXI.Sprite(PIXI.Texture.from("Sprites/Instruction_Buttons/Armor.png"));
+    weapon_button.position.x = health_button.position.x;
+    weapon_button.position.y = health_button.position.y + 70;
+    weapon_button.anchor.x = .5;
+    weapon_button.anchor.y = .5;
+    weapon_button.scale.set(1.5, 1.5);
+    inventoryScene.addChild(weapon_button);
+
+    armor_button = new PIXI.Sprite(PIXI.Texture.from("Sprites/Instruction_Buttons/Armor.png"));
+    armor_button.position.x = weapon_button.position.x;
+    armor_button.position.y = weapon_button.position.y + 70;
+    armor_button.anchor.x = .5;
+    armor_button.anchor.y = .5;
+    armor_button.scale.set(1.5, 1.5);
+    inventoryScene.addChild(armor_button);
 
 
     quit_game_inventory = new PIXI.Sprite(PIXI.Texture.from("Sprites/Menu_Buttons/Sprite_Quit.png"));
@@ -389,13 +430,41 @@ function setup()
     animate();
 }
 
+
+
+// set up game in order to play as a female character
 function setUpSceneOne_Female()
 {
     bg = new PIXI.Sprite(PIXI.Texture.from("Sprites/Backgrounds/Background_Level1_1.png"));
-
     gameScene_1.addChild(bg);
 
 
+    // adding hearts to game
+    heart_count = 3;
+
+    heart_1 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Heart.png"));
+    heart_1.position.x = 20;
+    heart_1.position.y = 20;
+    heart_1.anchor.x = .5;
+    heart_1.anchor.y = .5;
+    gameScene_1.addChild(heart_1);
+
+    heart_2 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Heart.png"));
+    heart_2.position.x = heart_1.position.x + 30;
+    heart_2.position.y = 20;
+    heart_2.anchor.x = .5;
+    heart_2.anchor.y = .5;
+    gameScene_1.addChild(heart_2);
+
+    heart_3 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Heart.png"));
+    heart_3.position.x = heart_2.position.x + 30;
+    heart_3.position.y = 20;
+    heart_3.anchor.x = .5;
+    heart_3.anchor.y = .5;
+    gameScene_1.addChild(heart_3);
+
+
+    // set up character animations
     var female_character_frames_r = [];
     var female_character_frames_l = [];
 
@@ -413,25 +482,27 @@ function setUpSceneOne_Female()
     character_l.scale.set(1, 1);
     character_l.anchor.x = .5;
     character_l.anchor.y = 5;
-    character_l.animationSpeed = 0.25;
     character_l.play();
-    
+    character_l.animationSpeed = 0.25;
+    gameScene_1.addChild(character_l);
+
     character_r = new PIXI.AnimatedSprite(female_character_frames_r)
     character_r.scale.set(1, 1);
     character_r.anchor.x = .5;
     character_r.anchor.y = 5;
-    character_r.animationSpeed = 0.25;
     character_r.play();
+    character_r.animationSpeed = 0.25;
+    gameScene_1.addChild(character_r);
 
+    // creating player
     player = character_r;
-    player.visible = true;
-    player.interactive = true;
-
     player.position.x = 30;
-    player.position.y = 30;
+    player.position.y = 80;
     player.anchor.x = .5;
     player.anchor.y = .5;
 
+
+    // setting visibility and interativeness for gamescene
     openingScene.interactive = false;
     openingScene.visible = false;
     gameScene_1.visible = true;
@@ -439,14 +510,47 @@ function setUpSceneOne_Female()
     quit_game_button.interative = true;
     quit_game_button.visible = true;
 
+    player.visible = true;
+    player.interactive = true;
+
+    heart_1.visible = true;
+    heart_2.visible = true;
+    heart_3.visible = true;
+
 }
 
+// set up game in order to play as a male character
 function setUpSceneOne_Male()
 {
     bg = new PIXI.Sprite(PIXI.Texture.from("Sprites/Backgrounds/Background_Level1_1.png"));
-
     gameScene_1.addChild(bg);
 
+    // adding hearts to game
+    heart_count = 3;
+
+    heart_1 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Heart.png"));
+    heart_1.position.x = 20;
+    heart_1.position.y = 20;
+    heart_1.anchor.x = .5;
+    heart_1.anchor.y = .5;
+    gameScene_1.addChild(heart_1);
+
+    heart_2 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Heart.png"));
+    heart_2.position.x = heart_1.position.x + 30;
+    heart_2.position.y = 20;
+    heart_2.anchor.x = .5;
+    heart_2.anchor.y = .5;
+    gameScene_1.addChild(heart_2);
+
+    heart_3 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Heart.png"));
+    heart_3.position.x = heart_2.position.x + 30;
+    heart_3.position.y = 20;
+    heart_3.anchor.x = .5;
+    heart_3.anchor.y = .5;
+    gameScene_1.addChild(heart_3);
+
+
+    // setting up character animations
     var male_character_frames_r = [];
     var male_character_frames_l = [];
 
@@ -472,29 +576,36 @@ function setUpSceneOne_Male()
     character_r.scale.set(1, 1);
     character_r.anchor.x = .5;
     character_r.anchor.y = 5;
-    character_r.position.x = 30;
-    character_r.position.y = 30;
     character_r.play();
     character_r.animationSpeed = 0.25;
     gameScene_1.addChild(character_r);
 
-    player = character_r;
-    player.visible = true;
-    player.interactive = true;
 
+    // creating player
+    player = character_r;
     player.position.x = 30;
-    player.position.y = 30;
+    player.position.y = 80;
     player.anchor.x = .5;
     player.anchor.y = .5;
 
+
+    // setting visibility and interativeness for gamescene
     openingScene.interactive = false;
     openingScene.visible = false;
     gameScene_1.visible = true;
     gameScene_1.interactive = true;
     quit_game_button.interative = true;
     quit_game_button.visible = true;
+
+    player.visible = true;
+    player.interactive = true;
+
+    heart_1.visible = true;
+    heart_2.visible = true;
+    heart_3.visible = true;
 }
 
+// set up scene two
 function setUpSceneTwo()
 {
     bg = new PIXI.Sprite(PIXI.Texture.from("Sprites/Backgrounds/Background_Level2_1.png"));
@@ -513,10 +624,9 @@ function setUpSceneTwo()
     gameScene_1.interactive = false;
     gameScene_2.visible = true;
     gameScene_2.interactive = true;
-
-    
 }
 
+// set up scene three
 function setUpSceneThree()
 {
     bg = new PIXI.Sprite(PIXI.Texture.from("Sprites/Backgrounds/Background_Level3_1.png"));
@@ -537,6 +647,7 @@ function setUpSceneThree()
     gameScene_3.interactive = true;
 }
 
+// set up scene four
 function setUpSceneFour()
 {
     bg = new PIXI.Sprite(PIXI.Texture.from("Sprites/Backgrounds/Background_Level4_1.png"));
@@ -555,6 +666,12 @@ function setUpSceneFour()
     gameScene_3.interactive = false;
     gameScene_4.visible = true;
     gameScene_4.interactive = true;
+}
+
+// add the appropriate amount of hearts to the game
+function addHearts(currentScene)
+{
+    
 }
 
 // all the code that will run at the end of the game
@@ -906,12 +1023,71 @@ function keydownHandler(e)
 
 function inventoryPageHandler(e)
 {
-    if (e.keyCode == 73)
+    heal_button.interactive = true;
+    armor_button.interative = true;
+    upgrade_button.interative = true;
+    weapon_button.interative = true;
+    health_button.interative = true;
+
+    // set up the inventory box content
+
+    let inventory_box_titles = new PIXI.Text(
+        'Coal:\n\n Copper:\n\n Iron:\n\n Gold:\n\n Health Potino:\n\n Armor Potino:\n\n Speed Potion:\n\n Strength Potion:\n\n',
+        {fontFamily : "\"Courier New\", Courier, monospace",
+            fontSize: 20,
+            fontWeight: "bold",
+            fill : ["black"],
+            align : 'left'});
+    
+    inventory_box_titles.x = inventory_box.position.x - 50;
+    inventory_box_titles.y = inventory_box.position.y + 20;
+    inventory_box_titles.anchor.x = .5;
+    inventory_box_titles.anchor.y = 0;
+    inventoryScene.addChild(inventory_box_titles);
+
+    inventory_box_amount = new PIXI.Text(
+        'here Im same asdfaefaefwefawef',
+        {fontFamily : "\"Courier New\", Courier, monospace",
+            fontSize: 20,
+            fill : ["black"],
+            align : 'left'});
+
+    inventory_box_amount.x = inventory_box.position.x - 50;
+    inventory_box_amount.y = inventory_box.position.y + 20;
+    inventory_box_amount.anchor.x = .5;
+    inventory_box_amount.anchor.y = 0;
+    inventoryScene.addChild(inventory_box_amount);
+
+
+    heal_button.on("mouseover", () => {
+        heal_text.visible = true;
+        armor_text.visible = false;
+        upgrade_text.visible = false;
+        health_text.visible = false;
+        weapon_text.visible = false;
+    })
+
+    armor_button.on("mouseover", () =>{
+        heal_text.visible = false;
+        armor_text.visible = true;
+        upgrade_text.visible = false;
+        health_text.visible = false;
+        weapon_text.visible = false;
+    })
+
+
+    if (e.keyCode == 73) //i button
     {
         inventoryPage = false;
 
         inventoryScene.visible = false;
         inventoryScene.interactive = false;
+
+        heal_button.interactive = false;
+        armor_button.interative = false;
+        upgrade_button.interative = false;
+        weapon_button.interative = false;
+        health_button.interative = false;
 
         renderer.render(gameScene_1);
 
