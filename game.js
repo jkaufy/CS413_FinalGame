@@ -14,7 +14,16 @@ var beginWave = true;
     Create game scene variables 
 */
 var openingScene, gameScene_1, gameScene_2, gameScene_3, 
-    gameScene_4, instructionScene, gameOverScene, creditScene, inventoryScene;
+    gameScene_4, instructionScene, gameOverScene, creditScene;
+
+
+
+/*
+    Inventory Variables
+*/
+
+var inventory = {}, inventoryScene, heal_button, upgrade_button, health_button, 
+    weapon_button, armor_button, description_box, inventory_box;
 
 /*
     Menu button variables 
@@ -25,7 +34,6 @@ var start_button, instruction_button, credits_button,
 
 var title_text, male, female, female_character, male_character, character_r, character_l;
 
-var inventory = {};
 /*
     Create end variables 
 */
@@ -83,6 +91,9 @@ PIXI.loader
 // This will initialize all our sprites and start our gameloop
 function setup()
 {
+    /***********************************************************************************
+                                    OPENING SCENE SET UP
+     ***********************************************************************************/
     openingScene.interactive = true;
     openingScene.visible = true;
 
@@ -179,9 +190,9 @@ function setup()
     openingScene.addChild(female);
     female.visible = false;
 
-    /*
-            INSTRUCTION SCENE SETUP
-    */
+    /**********************************************************************************
+                                    INSTRUCTION SCENE SETUP
+    ***********************************************************************************/
     instructionScene.interactive = false;
     instructionScene.visible = false;
 
@@ -228,16 +239,76 @@ function setup()
     quit_instructions_button.interactive = false;
 
     instructions = new PIXI.Sprite(PIXI.Texture.from("Sprites/Menu_Buttons/Sprite_Instructions.png"));
+    
+    /***********************************************************************************
+                                    INVENTORY SET UP
+    ***********************************************************************************/
 
-    // instructionScene.addChild(instructions);
-    // instructions.anchor.x = .5;
-    // instructions.anchor.y = .5;
-    // instructions.position.x = 250;
-    // instructions.position.y = 250;
+    inventory = {"coal" : 0, "copper" : 0, "iron" : 0, "gold" : 0, "healing potion" : 0, 
+                "armor potion" : 0, "weapon potion" : 0, "sterngth potion" : 0, 
+                "leaf of health" : 0};
 
-    /*
-            END GAME SCENE SET UP  
-    */
+    let inventory_title = new PIXI.Text(
+        'INVENTORY',
+        {fontFamily : "\"Courier New\", Courier, monospace",
+            fontSize: 30,
+            fontWeight: "bold",
+            fill : ["#fa0"],
+            align : 'center'});
+
+    inventory_title.x = GAME_WIDTH/4;
+    inventory_title.y = 50;
+    inventory_title.anchor.x = .5;
+    inventory_title.anchor.y = 0;
+    inventoryScene.addChild(inventory_title);
+    
+    inventory_box = new PIXI.Sprite(PIXI.Texture.from("Sprites/Instruction_Buttons/Inventory_Box.png"));    
+
+
+    let description = new PIXI.Text(
+        'DESCRIPTION',
+        {fontFamily : "\"Courier New\", Courier, monospace",
+            fontSize: 30,
+            fontWeight: "bold",
+            fill : ["#fa0"],
+            align : 'center'});
+
+    description.x = GAME_WIDTH/2 + GAME_WIDTH/4;
+    description.y = 50;
+    description.anchor.x = .5;
+    description.anchor.y = 0;
+    inventoryScene.addChild(description);
+ 
+    description_box = new PIXI.Sprite(PIXI.Texture.from("Sprites/Instruction_Buttons/Description_Box.png"));
+    inventoryScene.addChild(description_box);
+    description_box.anchor.x = .5;
+    description_box.anchor.y = 0;
+    description_box.position.x = description.x;
+    description_box.position.y = description.y + 30;
+
+    heal_button = new PIXI.Sprite(PIXI.Texture.from("Sprites/Instruction_Buttons/Heal_Button.png")); 
+    upgrade_button = new PIXI.Sprite(PIXI.Texture.from("Sprites/Instruction_Buttons/Upgrades.png"));
+    health_button = new PIXI.Sprite(PIXI.Texture.from("Sprites/Instruction_Buttons/Health.png"));
+    weapon_button = new PIXI.Sprite(PIXI.Texture.from("Sprites/Instruction_Buttons/Weapon.png"));
+    armor_button = = new PIXI.Sprite(PIXI.Texture.from("Sprites/Instruction_Buttons/Armor.png"));
+
+
+    quit_game_inventory = new PIXI.Sprite(PIXI.Texture.from("Sprites/Menu_Buttons/Sprite_Quit.png"));
+    inventoryScene.addChild(quit_game_inventory);
+    quit_game_inventory.anchor.x = .5;
+    quit_game_inventory.anchor.y = .5;
+    quit_game_inventory.position.x = GAME_WIDTH - 50;
+    quit_game_inventory.position.y = 30;
+    
+    quit_game_inventory.interactive = false;
+
+    inventoryScene.visible = false;
+    inventoryScene.interactive = false;
+
+
+    /***********************************************************************************
+                                    END GAME SCENE SET UP  
+    ***********************************************************************************/
 
     gameOverScene.interactive = false;
     gameOverScene.visible = false;
@@ -260,9 +331,9 @@ function setup()
     
     quit_game_over_button.interactive = false;
 
-    /*
-            CREDITS
-    */
+    /***********************************************************************************
+                                    CREDITS SET UP
+    ***********************************************************************************/
 
     creditScene.interactive = false;
     creditScene.visible = false;
@@ -307,10 +378,14 @@ function setup()
 
     quit_game_button = new PIXI.Sprite(PIXI.Texture.from("Sprites/Menu_Buttons/Sprite_Quit.png"));
     gameScene_1.addChild(quit_game_button);
-    
-    quit_game_inventory = new PIXI.Sprite(PIXI.Texture.from("Sprites/Menu_Buttons/Sprite_Quit.png"));
-    inventoryScene.addChild(quit_game_inventory);
+    quit_game_button.anchor.x = .5;
+    quit_game_button.anchor.y = .5;
+    quit_game_button.position.x = GAME_WIDTH - 50;
+    quit_game_button.position.y = 20;
 
+    quit_game_button.interactive = false;
+    quit_game_button.visible = false;
+    
     animate();
 }
 
@@ -320,7 +395,6 @@ function setUpSceneOne_Female()
 
     gameScene_1.addChild(bg);
 
-    inventory = {'coal': 0, 'copper': 0, 'silver': 0, 'gold': 0, 'healing potion': 0, 'armor potion': 0, 'speed potion': 0, 'strength potion': 0}
 
     var female_character_frames_r = [];
     var female_character_frames_l = [];
@@ -362,6 +436,8 @@ function setUpSceneOne_Female()
     openingScene.visible = false;
     gameScene_1.visible = true;
     gameScene_1.interactive = true;
+    quit_game_button.interative = true;
+    quit_game_button.visible = true;
 
 }
 
@@ -415,6 +491,8 @@ function setUpSceneOne_Male()
     openingScene.visible = false;
     gameScene_1.visible = true;
     gameScene_1.interactive = true;
+    quit_game_button.interative = true;
+    quit_game_button.visible = true;
 }
 
 function setUpSceneTwo()
@@ -427,10 +505,16 @@ function setUpSceneTwo()
     player.y = 50;
     gameScene_2.addChild(player);
 
+    gameScene_2.addChild(quit_game_button);
+    quit_game_button.interative = true;
+    quit_game_button.visible = true;
+
     gameScene_1.visible = false;
     gameScene_1.interactive = false;
     gameScene_2.visible = true;
     gameScene_2.interactive = true;
+
+    
 }
 
 function setUpSceneThree()
@@ -442,6 +526,10 @@ function setUpSceneThree()
     player.x = 50;
     player.y = 50;
     gameScene_3.addChild(player);
+
+    gameScene_3.addChild(quit_game_button);
+    quit_game_button.interative = true;
+    quit_game_button.visible = true;
 
     gameScene_2.visible = false;
     gameScene_2.interactive = false;
@@ -458,6 +546,10 @@ function setUpSceneFour()
     player.x = 50;
     player.y = 50;
     gameScene_4.addChild(player);
+
+    gameScene_4.addChild(quit_game_button);
+    quit_game_button.interative = true;
+    quit_game_button.visible = true;
 
     gameScene_3.visible = false;
     gameScene_3.interactive = false;
