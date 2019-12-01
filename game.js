@@ -1,18 +1,20 @@
-var GAME_WIDTH = 500; 
-var GAME_HEIGHT = 500;
+var GAME_WIDTH = 750; 
+var GAME_HEIGHT = 750;
 
 var gameport = document.getElementById("gameport");
 
-var renderer = PIXI.autoDetectRenderer({width: GAME_WIDTH, height: GAME_HEIGHT, backgroundColor: 0x055D07});
+var renderer = PIXI.autoDetectRenderer({width: GAME_WIDTH, height: GAME_HEIGHT, backgroundColor: 0x3D0034});
 gameport.appendChild(renderer.view);
 
 PIXI.SCALE_MODES.DEFAULT = PIXI.SCALE_MODES.NEAREST;
+
+var beginWave = true;
 
 /*
     Create game scene variables 
 */
 var openingScene, gameScene_1, gameScene_2, gameScene_3, 
-    gameScene_4, instructionScene, gameOverScene, creditScene;
+    gameScene_4, instructionScene, gameOverScene, creditScene, inventoryScene;
 
 /*
     Menu button variables 
@@ -20,6 +22,8 @@ var openingScene, gameScene_1, gameScene_2, gameScene_3,
 var start_button, instruction_button, credits_button, 
     quit_game_button, credits, gameover, quit_credits_button, 
     quit_game_over_button, quit_instructions_button;
+
+var title_text, male, female, female_character, male_character, character_r, character_l;
 
 /*
     Create end variables 
@@ -41,6 +45,7 @@ var sprite2_bottom, sprite2_left_side, sprite2_right_side, sprite2_top;
 */
 var hitFromAbove, hitFromBelow, hitFromLeft, hitFromRight;
 
+var bg;
 
 // our menu that will offer the player to 'play', see 'instructions', or see 'credits'
 openingScene = new PIXI.Container();
@@ -49,8 +54,8 @@ openingScene.visible = true;
 gameScene_1 = new PIXI.Container();
 gameScene_1.visible = false;
 
-gameScene_2 = new PIXI.Container();
-gameScene_1.visible = false;
+iventoryScene = new PIXI.Container();
+iventoryScene = false;
 
 gameScene_3 = new PIXI.Container();
 gameScene_1.visible = false;
@@ -65,7 +70,10 @@ gameOverScene = new PIXI.Container();
 gameOverScene.visible = false;
 
 creditScene = new PIXI.Container();
-gameOverScene.visible = false;
+creditScene.visible = false;
+
+inventoryScene = new PIXI.Container();
+inventoryScene.visible = false;
 
 PIXI.loader
     .load(setup);
@@ -80,29 +88,92 @@ function setup()
     start_button = new PIXI.Sprite(PIXI.Texture.from("Sprites/Menu_Buttons/Sprite_Start_Button.png"));
     instruction_button = new PIXI.Sprite(PIXI.Texture.from("Sprites/Menu_Buttons/Sprite_How_To_Play.png"));
     credits_button = new PIXI.Sprite(PIXI.Texture.from("Sprites/Menu_Buttons/Sprite_Credits_Button.png"));
+    female_character = new PIXI.Sprite(PIXI.Texture.from("Sprites/Female_Player/Female_Player_L1.png"));
+    male_character = new PIXI.Sprite(PIXI.Texture.from("Sprites/Male_Player/Male_Player_R1.png"));
 
     openingScene.addChild(start_button);
     openingScene.addChild(instruction_button);
     openingScene.addChild(credits_button);
+    openingScene.addChild(female_character);
+    openingScene.addChild(male_character);
 
     start_button.anchor.x = .5;
     start_button.anchor.y = .5;
-    start_button.position.x = 250;
-    start_button.position.y = 150;
+    start_button.position.x = GAME_WIDTH/2;
+    start_button.position.y = GAME_HEIGHT/4;
 
     instruction_button.anchor.x = .5;
     instruction_button.anchor.y = .5;
-    instruction_button.position.x = 250;
-    instruction_button.position.y = 250;
+    instruction_button.position.x = GAME_WIDTH/2;
+    instruction_button.position.y = GAME_HEIGHT/2;
 
     credits_button.anchor.x = .5;
     credits_button.anchor.y = .5;
-    credits_button.position.x = 250;
-    credits_button.position.y = 350;
+    credits_button.position.x = GAME_WIDTH/2;
+    credits_button.position.y = GAME_HEIGHT/4 + GAME_HEIGHT/2;
+
+    female_character.anchor.x = .5;
+    female_character.anchor.y = .5;
+    female_character.position.x = GAME_WIDTH/2 - 70;
+    female_character.position.y = GAME_HEIGHT/2;
+    female_character.scale.set(1.5, 1.5);
+
+    male_character.anchor.x = .5;
+    male_character.anchor.y = .5;
+    male_character.position.x = GAME_WIDTH/2 + 70;
+    male_character.position.y = GAME_HEIGHT/2;
+    male_character.scale.set(1.5, 1.5);
 
     start_button.interactive = false;
     instruction_button.interactive = false;
     credits_button.interactive = false;
+
+    female_character.interactive = false;
+    male_character.interactive = false;
+    female_character.visible = false;
+    male_character.visible = false;
+
+    title_text = new PIXI.Text(
+        'Choose your \ncharacter:',
+        {fontFamily : "\"Courier New\", Courier, monospace",
+            fontSize: 40,
+            fontWeight: "bold",
+            fill : ["#fa0"],
+            align : 'center'});
+    title_text.x = GAME_WIDTH/2;
+    title_text.y = 100;
+    title_text.anchor.x = .5;
+    title_text.anchor.y = .5;
+    openingScene.addChild(title_text);
+    title_text.visible = false;
+
+    male = new PIXI.Text(
+        'Male',
+        {fontFamily : "\"Courier New\", Courier, monospace",
+            fontSize: 20,
+            fontWeight: "bold",
+            fill : ["#fa0"],
+            align : 'center'});
+    male.x = male_character.position.x;
+    male.y = male_character.position.y + 70;
+    male.anchor.x = .5;
+    male.anchor.y = .5;
+    openingScene.addChild(male);
+    male.visible = false;
+
+    female = new PIXI.Text(
+        'Female',
+        {fontFamily : "\"Courier New\", Courier, monospace",
+            fontSize: 20,
+            fontWeight: "bold",
+            fill : ["#fa0"],
+            align : 'center'});
+    female.x = female_character.position.x;
+    female.y = female_character.position.y + 70;
+    female.anchor.x = .5;
+    female.anchor.y = .5;
+    openingScene.addChild(female);
+    female.visible = false;
 
     /*
             INSTRUCTION SCENE SETUP
@@ -174,7 +245,7 @@ function setup()
     creditScene.addChild(credits_text);
 
     quit_credits_button = new PIXI.Sprite(PIXI.Texture.from("Sprites/Menu_Buttons/Sprite_Quit.png"));
-
+    
     creditScene.addChild(quit_credits_button);
     quit_credits_button.anchor.x = .5;
     quit_credits_button.anchor.y = .5;
@@ -183,14 +254,107 @@ function setup()
     
     quit_credits_button.interactive = false;
 
+    quit_game_button = new PIXI.Sprite(PIXI.Texture.from("Sprites/Menu_Buttons/Sprite_Quit.png"));
+    gameScene_1.addChild(quit_game_button);
     
+    quit_game_inventory = new PIXI.Sprite(PIXI.Texture.from("Sprites/Menu_Buttons/Sprite_Quit.png"));
+    inventoryScene.addChild(quit_game_inventory);
 
     animate();
 }
 
-function setUpSceneOne()
+function setUpSceneOne_Female()
 {
-    // do something
+    bg = new PIXI.Sprite(PIXI.Texture.from("Sprites/Backgrounds/Background_Level1_1.png"));
+
+    gameScene_1.addChild(bg);
+
+    var female_character_frames_r = [];
+    var female_character_frames_l = [];
+
+    for(var i = 1; i <= 11; i ++)
+    {
+        female_character_frames_r.push(PIXI.Texture.fromFrame('Sprites/Female_Player/Female_Player_R' + i + '.png'))
+    }
+
+    for(var j = 1; j <= 11; j ++)
+    {
+        female_character_frames_l.push(PIXI.Texture.fromFrame('Sprites/Female_Player/Female_Player_R' + j + '.png'))
+    }
+
+    character_l = new PIXI.AnimatedSprite(female_character_frames_l)
+    character_l.scale.set(1, 1);
+    character_l.position.x = 10;
+    character_l.position.y = 10;
+    character_l.anchor.x = .5;
+    character_l.anchor.y = 5;
+    character_l.play();
+    
+    character_r = new PIXI.AnimatedSprite(female_character_frames_r)
+    character_r.scale.set(1, 1);
+    character_r.position.x = 10;
+    character_r.position.y = 10;
+    character_r.anchor.x = .5;
+    character_r.anchor.y = 5;
+    character_r.play();
+
+    player = character_r;
+    player.visible = true;
+    player.interactive = true;
+
+    openingScene.interactive = false;
+    openingScene.visible = false;
+    gameScene_1.visible = true;
+    gameScene_1.interactive = true;
+
+}
+
+function setUpSceneOne_Male()
+{
+    bg = new PIXI.Sprite(PIXI.Texture.from("Sprites/Backgrounds/Background_Level1_1.png"));
+
+    gameScene_1.addChild(bg);
+
+    var male_character_frames_r = [];
+    var male_character_frames_l = [];
+
+    for(var i = 1; i <= 11; i ++)
+    {
+        male_character_frames_r.push(PIXI.Texture.fromFrame('Sprites/Female_Player/Female_Player_R' + i + '.png'))
+    }
+
+    for(var j = 1; j <= 11; j ++)
+    {
+        male_character_frames_l.push(PIXI.Texture.fromFrame('Sprites/Female_Player/Female_Player_R' + j + '.png'))
+    }
+
+    character_l = new PIXI.AnimatedSprite(male_character_frames_l)
+    character_l.scale.set(1, 1);
+    character_l.position.x = 10;
+    character_l.position.y = 10;
+    character_l.anchor.x = .5;
+    character_l.anchor.y = 5;
+    character_l.play();
+    gameScene_1.addChild(character_l);
+
+    
+    character_r = new PIXI.AnimatedSprite(male_character_frames_r)
+    character_r.scale.set(1, 1);
+    character_r.position.x = 10;
+    character_r.position.y = 10;
+    character_r.anchor.x = .5;
+    character_r.anchor.y = 5;
+    character_r.play();
+    gameScene_1.addChild(character_r);
+
+    player = character_r;
+    player.visible = true;
+    player.interactive = true;
+
+    openingScene.interactive = false;
+    openingScene.visible = false;
+    gameScene_1.visible = true;
+    gameScene_1.interactive = true;
 }
 
 function setUpSceneTwo()
@@ -222,14 +386,21 @@ function end()
 
 function start()
 {
-    openingScene.interactive = false;
     start_button.interactive = false;
+    start_button.visible = false;
     instruction_button.interactive = false;
+    instruction_button.visible = false;
     credits_button.interactive = false;
-    openingScene.visible = false;
+    credits_button.visible = false;
+    
 
-    gameScene_1.visible = true;
-    gameScene_1.interactive = true;
+    title_text.visible = true;
+    male.visible = true;
+    female.visible = true;
+    female_character.visible = true;
+    female_character.interactive = true;
+    male_character.visible = true;
+    male_character.interactive = true;
 }
 
 function quit()
@@ -267,6 +438,7 @@ function quit_gameover()
     gameOverScene.visible = false;
     openingScene.interactive = true;
     openingScene.visible = true;
+    inve
 
     renderer.render(openingScene);
 }
@@ -334,19 +506,92 @@ function finished()
     playCredits();
 }
 
+var zombies = [];
+var inventoryPage = false;
+var amount_of_zombies  = 10;
+
+var bullet_speed = 5;
+var bullets = [];
+
+var golds = [];
+var silvers = [];
+var bronzes = [];
+
+var amount_of_items = 10;
+
+var zombieSpeed = .2;
+
+
+function startWave ()
+{
+    for (index  = 0; index < amount_of_zombies; index++)
+    {
+        zombie = new PIXI.Sprite(PIXI.Texture.from("Sprites/Monsters/Golems/Gold_Golum_Sword1.png"));
+        zombies.push(zombie);
+
+        zombie.x = (Math.random() * 400);
+        zombie.y = (Math.random()* 400);
+        gameScene_1.addChild(zombie);
+    }
+
+    var item;
+
+    /*for (index = 0; index < amount_of_items; index++)
+    {
+        item = (Math.random() * 3) | 0;
+
+        if(item == 0)
+        {
+            gold = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Gold_Bar.png"));
+        }
+    }*/
+
+
+    beginWave = false;
+    amount_of_zombies += 2;
+}
+
+function moveZombies( zombie )
+{
+    if(zombie.position.x < player.position.x) {
+        zombie.position.x = zombie.position.x + 1 * zombieSpeed;
+      }
+      // move the enemy left
+      else if(zombie.position.x > player.position.x) {
+        zombie.position.x = zombie.position.x - 1 * zombieSpeed;
+      }
+      // move the enemy down
+      if(zombie.position.y < player.position.y) {
+        zombie.position.y = zombie.position.y + 1 * zombieSpeed;
+      }
+      // move the enemy up
+      else if(zombie.position.y > player.position.y) {
+        zombie.position.y = zombie.position.y - 1 * zombieSpeed;
+      }
+}
+
 function animate()
 {
     requestAnimationFrame(animate);
 
     if(openingScene.interactive)
     {
-        start_button.interactive = true;
-        instruction_button.interactive = true;
-        credits_button.interactive = true;
-        
-        start_button.on('mousedown', start);
-        instruction_button.on('mousedown', instructionHandler);
-        credits_button.on('mousedown', playCredits);
+        if(!female_character.visible)
+        {
+            start_button.interactive = true;
+            instruction_button.interactive = true;
+            credits_button.interactive = true;
+            
+            start_button.on('mousedown', start);
+            instruction_button.on('mousedown', instructionHandler);
+            credits_button.on('mousedown', playCredits);
+        }
+
+        else(female_character.visible)
+        {
+            female_character.on('mousedown', setUpSceneOne_Female);
+            male_character.on('mousedown', setUpSceneOne_Male);
+        }
 
         renderer.render(openingScene);
     }
@@ -354,51 +599,45 @@ function animate()
     // HANLDING SCENE 1
     else if(gameScene_1.interactive)
     {
-        // create if-statement that will end game by calling quit()
 
         // do something
+        if (inventoryPage)
+        {
+            quit_game_inventory.interactive = true;
+            quit_game_inventory.on('mousedown', quit);
+            
+            document.addEventListener('keydown', inventoryPageHandler);
 
-        next.on('mousedown', setUpSceneTwo);
+            renderer.render(inventoryScene);
+        }
 
-        quit_game_button.interactive = true;
-        quit_game_button.on('mousedown', quit);
-        document.addEventListener('keydown', keydownHandler);
+        else
+        {
+            quit_game_button.interactive = true;
+            quit_game_button.on('mousedown', quit);
+    
+            if (beginWave == true)
+            {
+            
+                // count down the wave
+    
+                // begin wave
+                startWave();
+    
+            }
+    
+            document.addEventListener('keydown', keydownHandler);
 
-        renderer.render(gameScene_1);
+            for (index = 0; index < zombies.length; index++)
+            {
+                 // move the enemy right
+                 moveZombies(zombies[index]);
+            }
+    
+            renderer.render(gameScene_1);
+        }
+
     }
-
-    // HANDLING SCENE 2
-    else if(gameScene_2.interactive)
-    {
-        // create if-statement that will end game by calling quit()
-
-        // do something
-
-        next.on('mousedown', setUpSceneTwo);
-
-        quit_game_button.interactive = true;
-        quit_game_button.on('mousedown', quit);
-        document.addEventListener('keydown', keydownHandler);
-
-        renderer.render(gameScene_2);
-    }
-
-    //HANDLING SCENE 3
-    else if(gameScene_3.interactive)
-    {
-        // create if-statement that will end game by calling quit()
-
-        // do something
-
-        next.on('mousedown', setUpSceneTwo);
-
-        quit_game_button.interactive = true;
-        quit_game_button.on('mousedown', quit);
-        document.addEventListener('keydown', keydownHandler);
-
-        renderer.render(gameScene_4);
-    }
-
     else if(instructionScene.interactive)
     { 
         quit_instructions_button.interactive = true;
@@ -435,22 +674,48 @@ function keydownHandler(e)
 {
     if (e.keyCode == 65) //A //LEFT
     {
-        
+        player = character_l;
+        player.x -= 10;
     }
-
     else if (e.keyCode == 68) //D //RIGHT
     {
-            
+        player = character_r;
+        player.x += 10;
     }
-
     else if (e.keyCode == 83) //S //DOWN
     {
-           
+        player.y += 10;
     }
-
     else if (e.keyCode == 87) //W //UP
     {
-            
+        player.y -= 10;
+    }
+    else if (e.keyCode == 73)
+    {
+        inventoryPage = true;
+
+        inventoryScene.visible = true;
+        inventoryScene.interactive = true;
+
+        renderer.render(inventoryScene);
+
+        document.removeEventListener('keydown', keydownHandler);
+    }
+}
+
+function inventoryPageHandler(e)
+{
+    if (e.keyCode == 73)
+    {
+        inventoryPage = false;
+        console.log("world");
+
+        inventoryScene.visible = false;
+        inventoryScene.interactive = false;
+
+        renderer.render(gameScene_1);
+
+        document.removeEventListener('keydown', inventoryPageHandler);
     }
 }
 
