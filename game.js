@@ -28,10 +28,11 @@ var inventory = {}, inventoryScene, heal_button, armor_potion_button, weapon_pot
     speed_potion_button, upgrade_weapon, upgrade_health, upgrade_armor, description_box, 
     inventory_box, inventory_box_names, inventory_box_amount;
 
-var coal, copper, iron, gold, copper_bar, iron_bar, gold_bar, health_potion, 
-    strength_potion, armor_potion, speed_potion, leaves_of_healing;
+var coal, copper, iron, gold, copper_bar, iron_bar, gold_bar, health_potion, weapon_potion, 
+    armor_potion, speed_potion, leaves_of_healing;
 
-var heal_text, armor_text, upgrade_text, health_text, weapon_text;
+var heal_text, armor_text, health_text, weapon_text, weapon_potion_text, armor_potion_text, speed_potion_text;
+
 
 /*
     Menu button variables 
@@ -40,7 +41,7 @@ var start_button, instruction_button, credits_button,
     quit_game_button, credits, gameover, quit_credits_button, 
     quit_game_over_button, quit_instructions_button;
 
-var title_text, male, female, female_character, male_character, character_r, character_l, 
+var title_text, male, female, female_character_choice, male_character_choice, character_r, character_l, 
     heart_1, heart_2, heart_3, heart_4, heart_5, heart_6, heart_count, max_hearts;
 
 /*
@@ -124,7 +125,7 @@ PIXI.loader
 var bgMusic = PIXI.sound.Sound.from({
     url: 'sound/bgMusic.wav',
     loop: true
-    });
+});
 
 
 // This will initialize all our sprites and start our gameloop
@@ -139,14 +140,14 @@ function setup()
     start_button = new PIXI.Sprite(PIXI.Texture.from("Sprites/Menu_Buttons/Sprite_Start_Button.png"));
     instruction_button = new PIXI.Sprite(PIXI.Texture.from("Sprites/Menu_Buttons/Sprite_How_To_Play.png"));
     credits_button = new PIXI.Sprite(PIXI.Texture.from("Sprites/Menu_Buttons/Sprite_Credits_Button.png"));
-    female_character = new PIXI.Sprite(PIXI.Texture.from("Sprites/Female_Player/Female_Player_L1.png"));
-    male_character = new PIXI.Sprite(PIXI.Texture.from("Sprites/Male_Player/Male_Player_R1.png"));
+    female_character_choice = new PIXI.Sprite(PIXI.Texture.from("Sprites/Female_Player/Female_Player_L1.png"));
+    male_character_choice = new PIXI.Sprite(PIXI.Texture.from("Sprites/Male_Player/Male_Player_R1.png"));
 
     openingScene.addChild(start_button);
     openingScene.addChild(instruction_button);
     openingScene.addChild(credits_button);
-    openingScene.addChild(female_character);
-    openingScene.addChild(male_character);
+    openingScene.addChild(female_character_choice);
+    openingScene.addChild(male_character_choice);
 
     start_button.anchor.x = .5;
     start_button.anchor.y = .5;
@@ -166,26 +167,26 @@ function setup()
     credits_button.position.y = GAME_HEIGHT/4 + GAME_HEIGHT/2;
     credits_button.scale.set(1.5, 1.5);
 
-    female_character.anchor.x = .5;
-    female_character.anchor.y = .5;
-    female_character.position.x = GAME_WIDTH/2 - 70;
-    female_character.position.y = GAME_HEIGHT/2;
-    female_character.scale.set(1.5, 1.5);
+    female_character_choice.anchor.x = .5;
+    female_character_choice.anchor.y = .5;
+    female_character_choice.position.x = GAME_WIDTH/2 - 70;
+    female_character_choice.position.y = GAME_HEIGHT/2;
+    female_character_choice.scale.set(1.5, 1.5);
 
-    male_character.anchor.x = .5;
-    male_character.anchor.y = .5;
-    male_character.position.x = GAME_WIDTH/2 + 70;
-    male_character.position.y = GAME_HEIGHT/2;
-    male_character.scale.set(1.5, 1.5);
+    male_character_choice.anchor.x = .5;
+    male_character_choice.anchor.y = .5;
+    male_character_choice.position.x = GAME_WIDTH/2 + 70;
+    male_character_choice.position.y = GAME_HEIGHT/2;
+    male_character_choice.scale.set(1.5, 1.5);
 
     start_button.interactive = false;
     instruction_button.interactive = false;
     credits_button.interactive = false;
 
-    female_character.interactive = false;
-    male_character.interactive = false;
-    female_character.visible = false;
-    male_character.visible = false;
+    female_character_choice.interactive = false;
+    male_character_choice.interactive = false;
+    female_character_choice.visible = false;
+    male_character_choice.visible = false;
 
     title_text = new PIXI.Text(
         'Choose your \ncharacter:',
@@ -208,8 +209,8 @@ function setup()
             fontWeight: "bold",
             fill : ["#fa0"],
             align : 'center'});
-    male.x = male_character.position.x;
-    male.y = male_character.position.y + 70;
+    male.x = male_character_choice.position.x;
+    male.y = male_character_choice.position.y + 70;
     male.anchor.x = .5;
     male.anchor.y = .5;
     openingScene.addChild(male);
@@ -222,8 +223,8 @@ function setup()
             fontWeight: "bold",
             fill : ["#fa0"],
             align : 'center'});
-    female.x = female_character.position.x;
-    female.y = female_character.position.y + 70;
+    female.x = female_character_choice.position.x;
+    female.y = female_character_choice.position.y + 70;
     female.anchor.x = .5;
     female.anchor.y = .5;
     openingScene.addChild(female);
@@ -343,7 +344,7 @@ function setup()
         {fontFamily : "\"Courier New\", Courier, monospace",
             fontSize: 20,
             fontWeight: "bold",
-            fill : ["#fa0"],
+            fill : ["black"],
             align : 'center'});
 
     heal_text.x = description_box.position.x;
@@ -369,7 +370,7 @@ function setup()
         {fontFamily : "\"Courier New\", Courier, monospace",
             fontSize: 20,
             fontWeight: "bold",
-            fill : ["#fa0"],
+            fill : ["black"],
             align : 'center'});
 
     weapon_potion_text.x = description_box.position.x;
@@ -394,7 +395,7 @@ function setup()
         {fontFamily : "\"Courier New\", Courier, monospace",
             fontSize: 20,
             fontWeight: "bold",
-            fill : ["#fa0"],
+            fill : ["black"],
             align : 'center'});
 
     speed_potion_text.x = description_box.position.x;
@@ -419,7 +420,7 @@ function setup()
         {fontFamily : "\"Courier New\", Courier, monospace",
             fontSize: 20,
             fontWeight: "bold",
-            fill : ["#fa0"],
+            fill : ["black"],
             align : 'center'});
 
     armor_potion_text.x = description_box.position.x;
@@ -445,7 +446,7 @@ function setup()
         {fontFamily : "\"Courier New\", Courier, monospace",
             fontSize: 20,
             fontWeight: "bold",
-            fill : ["#fa0"],
+            fill : ["black"],
             align : 'center'});
 
     health_text.x = description_box.position.x;
@@ -455,7 +456,7 @@ function setup()
     health_text.visible = false;
     inventoryScene.addChild(health_text);
 
-    
+
     /*********** ADD WEAPON BUTTON **********/
 
     upgrade_weapon = new PIXI.Sprite(PIXI.Texture.from("Sprites/Instruction_Buttons/Weapon.png"));
@@ -471,7 +472,7 @@ function setup()
         {fontFamily : "\"Courier New\", Courier, monospace",
             fontSize: 20,
             fontWeight: "bold",
-            fill : ["#fa0"],
+            fill : ["black"],
             align : 'center'});
 
     weapon_text.x = description_box.position.x;
@@ -496,7 +497,7 @@ function setup()
         {fontFamily : "\"Courier New\", Courier, monospace",
             fontSize: 20,
             fontWeight: "bold",
-            fill : ["#fa0"],
+            fill : ["black"],
             align : 'center'});
 
     armor_text.x = description_box.position.x;
@@ -505,6 +506,8 @@ function setup()
     armor_text.anchor.y = 0;
     armor_text.visible = false;
     inventoryScene.addChild(armor_text);
+
+
 
 
 
@@ -568,7 +571,7 @@ function setup()
     creditScene.addChild(credits);
 
     let credits_text = new PIXI.Text(
-        'Samantha Muellner -- Art/Level Design and Coding\n\nJacob Kaufman -- Coding\n\nKyle Watson -- Editing, \nGitHub owner, Website Manager and Coding',
+        'Samantha Muellner -- Art/Level Design and Coding\n\nJacob Kaufman -- Coding\n\nKyle Watson -- GitHub owner and Coding\n\nStephen -- Coding',
         {fontFamily : "\"Courier New\", Courier, monospace",
             fontSize: 22,
             fontWeight: "bold",
@@ -617,10 +620,10 @@ function start()
     title_text.visible = true;
     male.visible = true;
     female.visible = true;
-    female_character.visible = true;
-    female_character.interactive = true;
-    male_character.visible = true;
-    male_character.interactive = true;
+    female_character_choice.visible = true;
+    female_character_choice.interactive = true;
+    male_character_choice.visible = true;
+    male_character_choice.interactive = true;
 }
 
 function instructionHandler(e)
@@ -676,7 +679,7 @@ function setUpSceneOne_Female()
     iron_bar = 0; 
     gold_bar = 0; 
     health_potion = 0; 
-    strength_potion = 0;
+    weapon_potion = 0;
     armor_potion = 0; 
     speed_potion = 0; 
     leaves_of_healing = 0;
@@ -698,7 +701,9 @@ function setUpSceneOne_Female()
     character_l = new PIXI.AnimatedSprite(female_character_frames_l)
     character_l.scale.set(1, 1);
     character_l.anchor.x = .5;
-    character_l.anchor.y = 5;
+    character_l.anchor.y = .5;
+    character_l.x = 30;
+    character_l.y = 30;
     character_l.play();
     character_l.animationSpeed = 0.25;
     gameScene_1.addChild(character_l);
@@ -706,7 +711,9 @@ function setUpSceneOne_Female()
     character_r = new PIXI.AnimatedSprite(female_character_frames_r)
     character_r.scale.set(1, 1);
     character_r.anchor.x = .5;
-    character_r.anchor.y = 5;
+    character_r.anchor.y = .5;
+    character_r.x = 30;
+    character_r.y = 30;
     character_r.play();
     character_r.animationSpeed = 0.25;
     gameScene_1.addChild(character_r);
@@ -731,6 +738,8 @@ function setUpSceneOne_Female()
 
     player.visible = true;
     player.interactive = true;
+    character_l.visible = false;
+    character_r.visible = true;
 
     heart_1.visible = true;
     heart_2.visible = true;
@@ -769,7 +778,7 @@ function setUpSceneOne_Male()
     iron_bar = 0; 
     gold_bar = 0; 
     health_potion = 0; 
-    strength_potion = 0;
+    weapon_potion = 0;
     armor_potion = 0; 
     speed_potion = 0; 
     leaves_of_healing = 0;
@@ -791,7 +800,9 @@ function setUpSceneOne_Male()
     character_l = new PIXI.AnimatedSprite(male_character_frames_l)
     character_l.scale.set(1, 1);
     character_l.anchor.x = .5;
-    character_l.anchor.y = 5;
+    character_l.anchor.y = .5;
+    character_l.x = 30;
+    character_l.y = 30;
     character_l.play();
     character_l.animationSpeed = 0.25;
     gameScene_1.addChild(character_l);
@@ -799,7 +810,9 @@ function setUpSceneOne_Male()
     character_r = new PIXI.AnimatedSprite(male_character_frames_r)
     character_r.scale.set(1, 1);
     character_r.anchor.x = .5;
-    character_r.anchor.y = 5;
+    character_r.anchor.y = .5;
+    character_r.x = 30;
+    character_r.y = 30;
     character_r.play();
     character_r.animationSpeed = 0.25;
     gameScene_1.addChild(character_r);
@@ -825,6 +838,8 @@ function setUpSceneOne_Male()
 
     player.visible = true;
     player.interactive = true;
+    character_l.visible = false;
+    character_r.visible = true;
 
     heart_1.visible = true;
     heart_2.visible = true;
@@ -1131,6 +1146,7 @@ function addHeart()
 {
     heart_count ++;
     max_hearts ++;
+    leaves_of_healing -= 4;
 
     // if there is a 5th heart, add a 6th one
     switch(heart_count){
@@ -1149,6 +1165,8 @@ function addHeart()
         default: // there was only one heart left, and so now there will be 2
             heart_2.visible = true;
     }
+
+    heal()
 }
 
 // function that will change a black heart to a red one
@@ -1237,6 +1255,8 @@ function quit()
     // if quit, show game over scene and get ride of game scene
     gameOverScene.interactive = true;
     gameOverScene.visible = true;
+    bgMusic.stop();
+    bgMusicPlaying = false;
 
     gameScene_1.visible = false;
     gameScene_1.interactive = false;
@@ -1257,19 +1277,26 @@ function quit_to_home()
     instructionScene.visible = false;
     openingScene.interactive = true;
     openingScene.visible = true;
+    bgMusic.stop();
+    bgMusicPlaying = false;
 
     renderer.render(openingScene);
 }
 
 function quit_gameover()
 {
-    female_character.visible = false;
-    female_character.interactive = false;
-    male_character.visible = false;
-    male_character.interactive = false;
+    female_character_choice.visible = false;
+    female_character_choice.interactive = false;
+    male_character_choice.visible = false;
+    male_character_choice.interactive = false;
+    player.interative = false;
+    player.visible = false;
     title_text.visible = false;
     male.visible = false;
     female.visible = false;
+
+    bgMusic.stop();
+    bgMusicPlaying = false;
     
     start_button.visible = true;
     start_button.interactive = true;
@@ -1287,41 +1314,6 @@ function quit_gameover()
     renderer.render(openingScene);
 }
 
-// function collisionBetween(sprite1, sprite2)
-// {
-//     sprite1_bottom = sprite1.y + sprite1.height/4;
-//     sprite1_top = sprite1.y - sprite1.height/4;
-//     sprite1_right_side = sprite1.x + sprite1.width/2;
-//     sprite1_left_side = sprite1.x - sprite1.width/2;
-
-//     sprite2_bottom = sprite2.y + sprite2.height/4;
-//     sprite2_top = sprite2.y - sprite2.height/4;
-//     sprite2_right_side = sprite2.x + sprite2.width;
-//     sprite2_left_side = sprite2.x - sprite2.width/6;
-
-
-//     hitFromAbove = (sprite1_bottom >= sprite2_top) 
-//                         && (sprite1_top <= sprite2_top)
-//                         && (sprite1.x > sprite2_left_side) 
-//                         && (sprite1.x < sprite2_right_side);
-
-//     hitFromBelow = (sprite1_top <= sprite2_bottom) 
-//                         && (sprite1_bottom >= sprite2_bottom) 
-//                         && (sprite1.x > sprite2_left_side) 
-//                         && (sprite1.x < sprite2_right_side);
-
-//     hitFromLeft = (sprite1_right_side >= sprite2_left_side) 
-//                         && (sprite1_left_side <= sprite2_left_side)
-//                         && (sprite1.y > sprite2_top) 
-//                         && (sprite1.y < sprite2_bottom);
-
-//     hitFromRight = (sprite1_left_side <= sprite2_right_side) 
-//                         && (sprite1_right_side >= sprite2_right_side)
-//                         && (sprite1.y > sprite2_top) 
-//                         && (sprite1.y < sprite2_bottom);
-
-//     return hitFromAbove || hitFromBelow || hitFromLeft || hitFromRight;
-// }
 
 // Function: collisionDetection(first, second)
 // Desc: Detects when two sprites collide.
@@ -1335,7 +1327,7 @@ function collisionDetection(first, second) {
         && firstBounds.x < secondBounds.x + secondBounds.width 
         && firstBounds.y + firstBounds.height > secondBounds.y
         && firstBounds.y < secondBounds.y + secondBounds.height;
-  }
+}
 
 function finished()
 {
@@ -1441,7 +1433,9 @@ function animate()
 
     if(openingScene.interactive)
     {
-        if(!female_character.visible)
+        quit_game_over_button.interactive = false;
+
+        if(!female_character_choice.visible)
         {
             start_button.interactive = true;
             instruction_button.interactive = true;
@@ -1452,15 +1446,16 @@ function animate()
             credits_button.on('mousedown', playCredits);
         }
 
-        else(female_character.visible)
+        else(female_character_choice.visible)
         {
-            female_character.on('mousedown', setUpSceneOne_Female);
-            male_character.on('mousedown', setUpSceneOne_Male);
+            female_character_choice.on('mousedown', setUpSceneOne_Female);
+            male_character_choice.on('mousedown', setUpSceneOne_Male);
         }
 
         renderer.render(openingScene);
     }
     
+
     // HANLDING SCENE 1
     else if(gameScene_1.interactive)
     {
@@ -1472,7 +1467,7 @@ function animate()
             quit_game_inventory.interactive = true;
             quit_game_inventory.on('mousedown', quit);
             
-            document.addEventListener('keydown', inventoryPageHandler);
+            //document.addEventListener('keydown', inventoryPageHandler);
 
             renderer.render(inventoryScene);
         }
@@ -1487,7 +1482,6 @@ function animate()
                 // count down the wave
     
                 // begin wave
-
                 startWave();
             }
     
@@ -1499,9 +1493,9 @@ function animate()
                 moveZombies(zombies[index]);
 
                 // UNCOMMENT THIS FOR COLLISION (AND LAG) (Currently shows collisions in times where it shouldn't)
-                // if(collisionDetection(female_character, zombies[index])) {
-                //     console.log("HIT")
-                // }
+                if(collisionDetection(player, zombies[index])) {
+                    console.log("HIT")
+                }
             }
             spawnZombies();
     
@@ -1563,7 +1557,7 @@ function animate()
             quit_game_inventory.interactive = true;
             quit_game_inventory.on('mousedown', quit);
             
-            document.addEventListener('keydown', inventoryPageHandler);
+            document.addEventListener('keydown', keydownHandler);
 
             renderer.render(inventoryScene);
         }
@@ -1659,6 +1653,7 @@ function animate()
 
     else if(creditScene.interactive)
     {
+        quit_game_over_button.interactive = false;
         quit_credits_button.interactive = true;
         quit_credits_button.on('mousedown', quit_to_home);
         //createjs.Tween.get(credits).to({y: -100}, 10000);
@@ -1672,66 +1667,88 @@ function keydownHandler(e)
 {
     if (e.keyCode == 65) //A //LEFT
     {
-
-        // Handles going off the screen the left 
-        if( player.x  < 30 )
-        {
-            player.x = 30;
-        }
-
         character_l.x = player.x;
         character_l.y = player.y;
+        character_l.visible = true;
+        character_r.visible = false;
         player = character_l;
-        
-        player.x -= 10;
 
-       
+
+        // Handles going off the screen the left 
+        if( player.x > 30 )
+        {
+            player.x -= 10;
+        }         
     }
+
     else if (e.keyCode == 68) //D //RIGHT
     {
-        // Handles going off the right of the screen 
-        if( player.x > GAME_WIDTH - 30 )
-        {         
-            player.x = GAME_WIDTH - 30;
-        }
-
         character_r.x = player.x;
         character_r.y = player.y;
+        character_r.visible = true;
+        character_l.visible = false;
         player = character_r;
         
-        player.x += 10;
-
+        // Handles going off the right of the screen 
+        if( player.x < GAME_WIDTH - 30 )
+        {         
+            player.x += 10;
+        }
     }
+
     else if (e.keyCode == 83) //S //DOWN
     {
-        if( player.y > GAME_HEIGHT - 40)
+        if( player.y < GAME_HEIGHT - 40)
         {
-            player.y = GAME_HEIGHT - 40;
+            player.y += 10;
         }
-
-        player.y += 10;
-        
     }
+
     else if (e.keyCode == 87) //W //UP
     {
         // Handles going off the top of the screen 
-        if( player.y < 40 )
+        if( player.y > 40 )
         {
-            player.y = 50
+            player.y -= 10;
         }
         
-        player.y -= 10;
+        
     }
+
     else if (e.keyCode == 73) // I //INVENTORY 
     {
-        inventoryPage = true;
+        if(inventoryPage)
+        {
+            inventoryPage = false;
 
-        inventoryScene.visible = true;
-        inventoryScene.interactive = true;
+            //inventoryScene.visible = false;
+            inventoryScene.interactive = false;
 
-        renderer.render(inventoryScene);
+            heal_button.interactive = false;
+            upgrade_armor.interative = false;
+            upgrade_button.interative = false;
+            upgrade_weapon.interative = false;
+            upgrade_health.interative = false;
 
-        document.removeEventListener('keydown', keydownHandler);
+            renderer.render(current_game_scene);
+
+            document.removeEventListener('keydown', inventoryPageHandler);
+        }
+
+        else if(!inventoryPage)
+        {
+            inventoryPage = true;
+
+            inventoryScene.visible = true;
+            inventoryScene.interactive = true;
+
+            inventoryPageHandler();
+
+            renderer.render(inventoryScene);
+
+            document.removeEventListener('keydown', keydownHandler);
+        }
+        
     }
 }
 
@@ -1746,14 +1763,14 @@ function inventoryPageHandler(e)
 
     // visually create the names and set them into the inventory box
     inventory_box_names = new PIXI.Text(
-        'Coal:\n\n Copper:\n\n Iron:\n\n Gold:\n\n Health Potion:\n\n Armor Potion:\n\n Speed Potion:\n\n Strength Potion:\n\n',
+        ' Coal:\n\n Copper:\n\n Iron:\n\n Gold:\n\n Health Potion:\n\n Armor Potion:\n\n Speed Potion:\n\n Weapon Potion:\n\n',
         {fontFamily : "\"Courier New\", Courier, monospace",
             fontSize: 20,
             fontWeight: "bold",
             fill : ["black"],
             align : 'left'});
     
-    inventory_box_names.x = inventory_box.position.x;
+    inventory_box_names.x = inventory_box.position.x - 70;
     inventory_box_names.y = inventory_box.position.y + 20;
     inventory_box_names.anchor.x = .5;
     inventory_box_names.anchor.y = 0;
@@ -1761,15 +1778,15 @@ function inventoryPageHandler(e)
 
     // visually create amounts and put them next to the names
     inventory_box_amount = new PIXI.Text(
-        toString(coal) + "\n\n" + toString(copper) + "\n\n" + toString(iron) + "\n\n" + toString(gold) 
-        + "\n\n" + toString(health_potion) + "\n\n" + toString(armor_potion) + "\n\n" + toString(speed_potion) 
-        + "\n\n" + toString(strength_potion),
+        toString(coal) + " \n\n" + toString(copper) + " \n\n" + toString(iron) + " \n\n" + toString(gold) 
+        + " \n\n" + toString(health_potion) + " \n\n" + toString(armor_potion) + " \n\n" + toString(speed_potion) 
+        + " \n\n" + toString(weapon_potion),
         {fontFamily : "\"Courier New\", Courier, monospace",
             fontSize: 20,
             fill : ["black"],
-            align : 'left'});
+            align : 'right'});
 
-    inventory_box_amount.x = inventory_box_names.position.x + 50;
+    inventory_box_amount.x = inventory_box.position.x + 70;
     inventory_box_amount.y = inventory_box.position.y + 20;
     inventory_box_amount.anchor.x = .5;
     inventory_box_amount.anchor.y = 0;
@@ -1779,30 +1796,34 @@ function inventoryPageHandler(e)
 
     /******** HANDLE HEAL BUTTON *******/
 
-    //heal_button.on("mouseover", console.log("here"))
+    heal_button.on("mouseover", () =>{
+        heal_text.visible = true;
+        armor_text.visible = false;
+        health_text.visible = false;
+        weapon_text.visible = false;
+        weapon_potion_text = false;
+        armor_potion_text = false;
+        speed_potion_text = false;
+    });
 
+    // only add a heart if there aren't already 6 possible and the player has 4 leaves of healing
     heal_button.on("mousedown", () => {
-        if(leaf_of_healing > 3)
+        if(leaf_of_healing > 3 && max_hearts < 6)
         {
             addHeart();
         }
-
-        else // display a message that you need to have 4 leaves of healing
-        {
-
-        }
-        
     });
 
 
     /******** HANDLE ARMOR BUTTON *******/
-
     upgrade_armor.on("mouseover", () =>{
         heal_text.visible = false;
         armor_text.visible = true;
-        upgrade_text.visible = false;
         health_text.visible = false;
         weapon_text.visible = false;
+        weapon_potion_text = false;
+        armor_potion_text = false;
+        speed_potion_text = false;
     })
 
     upgrade_armor.on("mousedown", () => {
@@ -1810,35 +1831,81 @@ function inventoryPageHandler(e)
     })
 
 
-    /******** HANDLE ARMOR BUTTON *******/
+    /******** HANDLE WEAPNON BUTTON *******/
+    upgrade_weapon.on("mouseover", () =>{
+        heal_text.visible = false;
+        armor_text.visible = false;
+        health_text.visible = false;
+        weapon_text.visible = true;
+        weapon_potion_text.visible = false;
+        armor_potion_text.visible = false;
+        speed_potion_text.visible = false;
+    })
 
+    upgrade_weapon.on("mousedown", () => {
 
-    /******** HANDLE ARMOR BUTTON *******/
+    })
 
+    /******** HANDLE HEALTH BUTTON *******/
+    upgrade_health.on("mouseover", () =>{
+        heal_text.visible = false;
+        armor_text.visible = false;
+        health_text.visible = true;
+        weapon_text.visible = false;
+        weapon_potion_text.visible = false;
+        armor_potion_text.visible = false;
+        speed_potion_text.visible = false;
+    })
 
-    /******** HANDLE ARMOR BUTTON *******/
+    upgrade_health.on("mousedown", () => {
 
+    })
 
-    /******** HANDLE ARMOR BUTTON *******/
+    /******** HANDLE SPEED BUTTON *******/
+    speed_potion_button.on("mouseover", () =>{
+        heal_text.visible = false;
+        armor_text.visible = true;
+        health_text.visible = false;
+        weapon_text.visible = false;
+        weapon_potion_text.visible = false;
+        armor_potion_text.visible = false;
+        speed_potion_text.visible = true;
+    })
 
+    speed_potion_button.on("mousedown", () => {
 
-    if (e.keyCode == 73) //i button
-    {
-        inventoryPage = false;
+    })
 
-        //inventoryScene.visible = false;
-        inventoryScene.interactive = false;
+    /******** HANDLE ARMOR POTION BUTTON *******/
+    armor_potion_button.on("mouseover", () =>{
+        heal_text.visible = false;
+        armor_text.visible = false;
+        health_text.visible = false;
+        weapon_text.visible = false;
+        weapon_potion_text.visible = false;
+        armor_potion_text.visible = true;
+        speed_potion_text.visible = false;
+    })
 
-        heal_button.interactive = false;
-        upgrade_armor.interative = false;
-        upgrade_button.interative = false;
-        upgrade_weapon.interative = false;
-        upgrade_health.interative = false;
+    armor_potion_button.on("mousedown", () => {
 
-        renderer.render(current_game_scene);
+    })
 
-        document.removeEventListener('keydown', inventoryPageHandler);
-    }
+    /******** HANDLE STRENGTH POTION BUTTON *******/
+    weapon_potion_button.on("mouseover", () =>{
+        heal_text.visible = false;
+        armor_text.visible = false;
+        health_text.visible = false;
+        weapon_text.visible = false;
+        weapon_potion_text.visible = true;
+        armor_potion_text.visible = false;
+        speed_potion_text.visible = false;
+    })
+
+    weapon_potion_button.on("mousedown", () => {
+
+    })
+
 }
 
 animate();
