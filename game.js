@@ -59,6 +59,12 @@ var sprite1_bottom, sprite1_left_side, sprite1_right_side, sprite1_top;
 var sprite2_bottom, sprite2_left_side, sprite2_right_side, sprite2_top;
 
 /*
+    Create animation boolean variables
+    (right_animation is set to true as default)
+*/
+var left_animation = false, right_animation = true, up_animation = false, down_animation = false;
+
+/*
     Create collision variables  
 */
 var hitFromAbove, hitFromBelow, hitFromLeft, hitFromRight;
@@ -1233,41 +1239,55 @@ function quit_gameover()
     renderer.render(openingScene);
 }
 
-function collisionBetween(sprite1, sprite2)
-{
-    sprite1_bottom = sprite1.y + sprite1.height/4;
-    sprite1_top = sprite1.y - sprite1.height/4;
-    sprite1_right_side = sprite1.x + sprite1.width/2;
-    sprite1_left_side = sprite1.x - sprite1.width/2;
+// function collisionBetween(sprite1, sprite2)
+// {
+//     sprite1_bottom = sprite1.y + sprite1.height/4;
+//     sprite1_top = sprite1.y - sprite1.height/4;
+//     sprite1_right_side = sprite1.x + sprite1.width/2;
+//     sprite1_left_side = sprite1.x - sprite1.width/2;
 
-    sprite2_bottom = sprite2.y + sprite2.height/4;
-    sprite2_top = sprite2.y - sprite2.height/4;
-    sprite2_right_side = sprite2.x + sprite2.width;
-    sprite2_left_side = sprite2.x - sprite2.width/6;
+//     sprite2_bottom = sprite2.y + sprite2.height/4;
+//     sprite2_top = sprite2.y - sprite2.height/4;
+//     sprite2_right_side = sprite2.x + sprite2.width;
+//     sprite2_left_side = sprite2.x - sprite2.width/6;
 
 
-    hitFromAbove = (sprite1_bottom >= sprite2_top) 
-                        && (sprite1_top <= sprite2_top)
-                        && (sprite1.x > sprite2_left_side) 
-                        && (sprite1.x < sprite2_right_side);
+//     hitFromAbove = (sprite1_bottom >= sprite2_top) 
+//                         && (sprite1_top <= sprite2_top)
+//                         && (sprite1.x > sprite2_left_side) 
+//                         && (sprite1.x < sprite2_right_side);
 
-    hitFromBelow = (sprite1_top <= sprite2_bottom) 
-                        && (sprite1_bottom >= sprite2_bottom) 
-                        && (sprite1.x > sprite2_left_side) 
-                        && (sprite1.x < sprite2_right_side);
+//     hitFromBelow = (sprite1_top <= sprite2_bottom) 
+//                         && (sprite1_bottom >= sprite2_bottom) 
+//                         && (sprite1.x > sprite2_left_side) 
+//                         && (sprite1.x < sprite2_right_side);
 
-    hitFromLeft = (sprite1_right_side >= sprite2_left_side) 
-                        && (sprite1_left_side <= sprite2_left_side)
-                        && (sprite1.y > sprite2_top) 
-                        && (sprite1.y < sprite2_bottom);
+//     hitFromLeft = (sprite1_right_side >= sprite2_left_side) 
+//                         && (sprite1_left_side <= sprite2_left_side)
+//                         && (sprite1.y > sprite2_top) 
+//                         && (sprite1.y < sprite2_bottom);
 
-    hitFromRight = (sprite1_left_side <= sprite2_right_side) 
-                        && (sprite1_right_side >= sprite2_right_side)
-                        && (sprite1.y > sprite2_top) 
-                        && (sprite1.y < sprite2_bottom);
+//     hitFromRight = (sprite1_left_side <= sprite2_right_side) 
+//                         && (sprite1_right_side >= sprite2_right_side)
+//                         && (sprite1.y > sprite2_top) 
+//                         && (sprite1.y < sprite2_bottom);
 
-    return hitFromAbove || hitFromBelow || hitFromLeft || hitFromRight;
-}
+//     return hitFromAbove || hitFromBelow || hitFromLeft || hitFromRight;
+// }
+
+// Function: collisionDetection(first, second)
+// Desc: Detects when two sprites collide.
+//       I got the idea for this function from:
+//       http://www.html5gamedevs.com/topic/24408-collision-detection/
+function collisionDetection(first, second) {
+    var firstBounds = first.getBounds();
+    var secondBounds = second.getBounds();
+  
+    return firstBounds.x + firstBounds.width > secondBounds.x
+        && firstBounds.x < secondBounds.x + secondBounds.width 
+        && firstBounds.y + firstBounds.height > secondBounds.y
+        && firstBounds.y < secondBounds.y + secondBounds.height;
+  }
 
 function finished()
 {
@@ -1417,13 +1437,10 @@ function animate()
             if (beginWave == true)
             {
                 // count down the wave
-                
     
                 // begin wave
 
                 startWave();
-              
-    
             }
     
             document.addEventListener('keydown', keydownHandler);
@@ -1432,18 +1449,16 @@ function animate()
             {
                 // move the enemy right
                 moveZombies(zombies[index]);
-            }
 
-            if(hitFromAbove || hitFromBelow || hitFromLeft || hitFromRight)
-            {
-                takeDamage();
+                // UNCOMMENT THIS FOR COLLISION (AND LAG) (Currently shows collisions in times where it shouldn't)
+                // if(collisionDetection(female_character, zombies[index])) {
+                //     console.log("HIT")
+                // }
             }
 
             spawnZombies();
     
             renderer.render(gameScene_1);
-
-            
         }
 
     }
@@ -1483,11 +1498,6 @@ function animate()
             {
                 // move the enemy right
                 moveZombies(zombies[index]);
-            }
-
-            if(hitFromAbove || hitFromBelow || hitFromLeft || hitFromRight)
-            {
-                takeDamage();
             }
             spawnZombies();
     
@@ -1533,11 +1543,6 @@ function animate()
                 moveZombies(zombies[index]);
             }
 
-            if(hitFromAbove || hitFromBelow || hitFromLeft || hitFromRight)
-            {
-                takeDamage();
-            }
-
             spawnZombies();
     
             renderer.render(gameScene_3);
@@ -1580,11 +1585,6 @@ function animate()
             {
                 // move the enemy right
                 moveZombies(zombies[index]);
-            }
-
-            if(hitFromAbove || hitFromBelow || hitFromLeft || hitFromRight)
-            {
-                takeDamage();
             }
 
             spawnZombies();
