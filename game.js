@@ -1,3 +1,5 @@
+/***************** Sams Code Start *****************/
+
 var GAME_WIDTH = 750; 
 var GAME_HEIGHT = 750;
 
@@ -13,15 +15,16 @@ var beginWave = true;
 /*
     Create game scene variables 
 */
-var openingScene, gameScene_1, gameScene_2, gameScene_3, 
+var openingScene, gameScene_1, gameScene_2, gameScene_3, current_game_scene, 
     gameScene_4, instructionScene, gameOverScene, creditScene;
 
 /*
     Inventory Variables
 */
 
-var inventory = {}, inventoryScene, heal_button, upgrade_button, health_button, 
-    weapon_button, armor_button, description_box, inventory_box;
+var inventory = {}, inventoryScene, heal_button, armor_potion_button, weapon_potion_button, 
+    speed_potion_button, upgrade_weapon, upgrade_health, upgrade_armor, description_box, 
+    inventory_box, inventory_box_names, inventory_box_amount;
 
 var coal, copper, iron, gold, copper_bar, iron_bar, gold_bar, health_potion, 
     strength_potion, armor_potion, speed_potion, leaves_of_healing;
@@ -295,47 +298,185 @@ function setup()
     description_box.position.x = description.x;
     description_box.position.y = description.y + 30;
 
-    heal_text, armor_text, upgrade_text, health_text, weapon_text;
+    
+    /*********** ADD HEALING BUTTON **********/
 
     heal_button = new PIXI.Sprite(PIXI.Texture.from("Sprites/Instruction_Buttons/Heal_Button.png")); 
     heal_button.position.x = description_box.position.x;
     heal_button.position.y = description_box.position.y + 300;
     heal_button.anchor.x = .5;
     heal_button.anchor.y = .5;
-    heal_button.scale.set(1.5, 1.5);
     inventoryScene.addChild(heal_button);
 
-    upgrade_button = new PIXI.Sprite(PIXI.Texture.from("Sprites/Instruction_Buttons/Upgrades.png"));
-    upgrade_button.position.x = heal_button.position.x;
-    upgrade_button.position.y = heal_button.position.y + 70;
-    upgrade_button.anchor.x = .5;
-    upgrade_button.anchor.y = .5;
-    upgrade_button.scale.set(1.5, 1.5);
-    inventoryScene.addChild(upgrade_button);
+    // when moused over 'healing button', this will display in the description box
+    heal_text = new PIXI.Text(
+        'use a healing potion \nto regain a heart',
+        {fontFamily : "\"Courier New\", Courier, monospace",
+            fontSize: 20,
+            fontWeight: "bold",
+            fill : ["#fa0"],
+            align : 'center'});
 
-    health_button = new PIXI.Sprite(PIXI.Texture.from("Sprites/Instruction_Buttons/Health.png"));
-    health_button.position.x = upgrade_button.position.x;
-    health_button.position.y = upgrade_button.position.y + 70;
-    health_button.anchor.x = .5;
-    health_button.anchor.y = .5;
-    health_button.scale.set(1.5, 1.5);
-    inventoryScene.addChild(health_button);
+    heal_text.x = description_box.position.x;
+    heal_text.y = description_box.position.y + 20;
+    heal_text.anchor.x = .5;
+    heal_text.anchor.y = 0;
+    heal_text.visible = false;
+    inventoryScene.addChild(heal_text);
 
-    weapon_button = new PIXI.Sprite(PIXI.Texture.from("Sprites/Instruction_Buttons/Weapon.png"));
-    weapon_button.position.x = health_button.position.x;
-    weapon_button.position.y = health_button.position.y + 70;
-    weapon_button.anchor.x = .5;
-    weapon_button.anchor.y = .5;
-    weapon_button.scale.set(1.5, 1.5);
-    inventoryScene.addChild(weapon_button);
 
-    armor_button = new PIXI.Sprite(PIXI.Texture.from("Sprites/Instruction_Buttons/Armor.png"));
-    armor_button.position.x = weapon_button.position.x;
-    armor_button.position.y = weapon_button.position.y + 70;
-    armor_button.anchor.x = .5;
-    armor_button.anchor.y = .5;
-    armor_button.scale.set(1.5, 1.5);
-    inventoryScene.addChild(armor_button);
+    /*********** ADD WEAPON POTION BUTTON **********/
+
+    weapon_potion_button = new PIXI.Sprite(PIXI.Texture.from("Sprites/Instruction_Buttons/Weapon_Potion.png"));
+    weapon_potion_button.position.x = heal_button.position.x;
+    weapon_potion_button.position.y = heal_button.position.y + 50;
+    weapon_potion_button.anchor.x = .5;
+    weapon_potion_button.anchor.y = .5;
+    inventoryScene.addChild(weapon_potion_button);
+
+    // when moused over 'healing button', this will display in the description box
+    weapon_potion_text = new PIXI.Text(
+        'use to increase weapon strenght\n for 10 seconds',
+        {fontFamily : "\"Courier New\", Courier, monospace",
+            fontSize: 20,
+            fontWeight: "bold",
+            fill : ["#fa0"],
+            align : 'center'});
+
+    weapon_potion_text.x = description_box.position.x;
+    weapon_potion_text.y = description_box.position.y + 20;
+    weapon_potion_text.anchor.x = .5;
+    weapon_potion_text.anchor.y = 0;
+    weapon_potion_text.visible = false;
+    inventoryScene.addChild(weapon_potion_text);
+
+    /*********** ADD SPEED POTION BUTTON **********/
+
+    speed_potion_button = new PIXI.Sprite(PIXI.Texture.from("Sprites/Instruction_Buttons/Speed_Potion.png"));
+    speed_potion_button.position.x = weapon_potion_button.position.x;
+    speed_potion_button.position.y = weapon_potion_button.position.y + 50;
+    speed_potion_button.anchor.x = .5;
+    speed_potion_button.anchor.y = .5;
+    inventoryScene.addChild(speed_potion_button);
+
+    // when moused over 'healing button', this will display in the description box
+    speed_potion_text = new PIXI.Text(
+        'use to increase speed for\n10 seconds',
+        {fontFamily : "\"Courier New\", Courier, monospace",
+            fontSize: 20,
+            fontWeight: "bold",
+            fill : ["#fa0"],
+            align : 'center'});
+
+    speed_potion_text.x = description_box.position.x;
+    speed_potion_text.y = description_box.position.y + 20;
+    speed_potion_text.anchor.x = .5;
+    speed_potion_text.anchor.y = 0;
+    speed_potion_text.visible = false;
+    inventoryScene.addChild(speed_potion_text);
+
+    /*********** ADD ARMOR POTION BUTTON **********/
+
+    armor_potion_button = new PIXI.Sprite(PIXI.Texture.from("Sprites/Instruction_Buttons/Armor_Potion.png"));
+    armor_potion_button.position.x = speed_potion_button.position.x;
+    armor_potion_button.position.y = speed_potion_button.position.y + 50;
+    armor_potion_button.anchor.x = .5;
+    armor_potion_button.anchor.y = .5;
+    inventoryScene.addChild(armor_potion_button);
+
+    // when moused over 'healing button', this will display in the description box
+    armor_potion_text = new PIXI.Text(
+        'use to increase armor strenght\n for 10 seconds',
+        {fontFamily : "\"Courier New\", Courier, monospace",
+            fontSize: 20,
+            fontWeight: "bold",
+            fill : ["#fa0"],
+            align : 'center'});
+
+    armor_potion_text.x = description_box.position.x;
+    armor_potion_text.y = description_box.position.y + 20;
+    armor_potion_text.anchor.x = .5;
+    armor_potion_text.anchor.y = 0;
+    armor_potion_text.visible = false;
+    inventoryScene.addChild(armor_potion_text);
+
+    
+    /*********** ADD HEALTH BUTTON **********/
+
+    upgrade_health = new PIXI.Sprite(PIXI.Texture.from("Sprites/Instruction_Buttons/Health.png"));
+    upgrade_health.position.x = armor_potion_button.position.x;
+    upgrade_health.position.y = armor_potion_button.position.y + 50;
+    upgrade_health.anchor.x = .5;
+    upgrade_health.anchor.y = .5;
+    inventoryScene.addChild(upgrade_health);
+
+    // when moused over 'healing button', this will display in the description box
+    health_text = new PIXI.Text(
+        'use to upgrade health\nrequires 4 leaves',
+        {fontFamily : "\"Courier New\", Courier, monospace",
+            fontSize: 20,
+            fontWeight: "bold",
+            fill : ["#fa0"],
+            align : 'center'});
+
+    health_text.x = description_box.position.x;
+    health_text.y = description_box.position.y + 20;
+    health_text.anchor.x = .5;
+    health_text.anchor.y = 0;
+    health_text.visible = false;
+    inventoryScene.addChild(health_text);
+
+    
+    /*********** ADD WEAPON BUTTON **********/
+
+    upgrade_weapon = new PIXI.Sprite(PIXI.Texture.from("Sprites/Instruction_Buttons/Weapon.png"));
+    upgrade_weapon.position.x = upgrade_health.position.x;
+    upgrade_weapon.position.y = upgrade_health.position.y + 50;
+    upgrade_weapon.anchor.x = .5;
+    upgrade_weapon.anchor.y = .5;
+    inventoryScene.addChild(upgrade_weapon);
+
+    // when moused over 'healing button', this will display in the description box
+    weapon_text = new PIXI.Text(
+        'use to upgrade weapon\nrequires 10 bars',
+        {fontFamily : "\"Courier New\", Courier, monospace",
+            fontSize: 20,
+            fontWeight: "bold",
+            fill : ["#fa0"],
+            align : 'center'});
+
+    weapon_text.x = description_box.position.x;
+    weapon_text.y = description_box.position.y + 20;
+    weapon_text.anchor.x = .5;
+    weapon_text.anchor.y = 0;
+    weapon_text.visible = false;
+    inventoryScene.addChild(weapon_text);
+
+    /*********** ADD ARMOR BUTTON **********/
+
+    upgrade_armor = new PIXI.Sprite(PIXI.Texture.from("Sprites/Instruction_Buttons/Armor.png"));
+    upgrade_armor.position.x = upgrade_weapon.position.x;
+    upgrade_armor.position.y = upgrade_weapon.position.y + 50;
+    upgrade_armor.anchor.x = .5;
+    upgrade_armor.anchor.y = .5;
+    inventoryScene.addChild(upgrade_armor);
+
+    // when moused over 'healing button', this will display in the description box
+    armor_text = new PIXI.Text(
+        'use a upgrade armor\nrequires 10 ore',
+        {fontFamily : "\"Courier New\", Courier, monospace",
+            fontSize: 20,
+            fontWeight: "bold",
+            fill : ["#fa0"],
+            align : 'center'});
+
+    armor_text.x = description_box.position.x;
+    armor_text.y = description_box.position.y + 20;
+    armor_text.anchor.x = .5;
+    armor_text.anchor.y = 0;
+    armor_text.visible = false;
+    inventoryScene.addChild(armor_text);
+
 
 
     quit_game_inventory = new PIXI.Sprite(PIXI.Texture.from("Sprites/Menu_Buttons/Sprite_Quit.png"));
@@ -930,6 +1071,7 @@ function setUpHearts(currentScene)
     currentScene.addChild(heart_6);
 }
 
+// will add a heart to the total count when the player chooses to upgrade their health
 function addHeart()
 {
     heart_count ++;
@@ -1122,6 +1264,14 @@ function finished()
     playCredits();
 }
 
+/***************** Sams Code End *****************/
+
+
+
+
+
+/***************** Jacobs Code Start *****************/
+
 var zombies = [];
 var inventoryPage = false;
 var amount_of_zombies  = 10;
@@ -1136,7 +1286,6 @@ var bronzes = [];
 var amount_of_items = 10;
 
 var zombieSpeed = .2;
-
 
 function startWave ()
 {
@@ -1186,6 +1335,14 @@ function moveZombies( zombie )
       }
 }
 
+/***************** Jacobs Code End *****************/
+
+
+
+
+
+/***************** Sams and Jacobs Code Start *****************/
+
 function animate()
 {
     requestAnimationFrame(animate);
@@ -1215,6 +1372,7 @@ function animate()
     // HANLDING SCENE 1
     else if(gameScene_1.interactive)
     {
+        current_game_scene = gameScene_1;
 
         // do something
         if (inventoryPage)
@@ -1261,6 +1419,7 @@ function animate()
 
     else if(gameScene_2.interactive)
     {
+        current_game_scene = gameScene_2;
 
         // do something
         if (inventoryPage)
@@ -1307,6 +1466,7 @@ function animate()
 
     else if(gameScene_3.interactive)
     {
+        current_game_scene = gameScene_3;
 
         // do something
         if (inventoryPage)
@@ -1353,6 +1513,7 @@ function animate()
 
     else if(gameScene_4.interactive)
     {
+        current_game_scene = gameScene_4;
 
         // do something
         if (inventoryPage)
@@ -1423,7 +1584,6 @@ function animate()
     }
 }
 
-
 //CREATE HANDLER FUNCTIONS
 function keydownHandler(e)
 {
@@ -1467,41 +1627,46 @@ function keydownHandler(e)
 function inventoryPageHandler(e)
 {
     heal_button.interactive = true;
-    armor_button.interative = true;
+    upgrade_armor.interative = true;
     upgrade_button.interative = true;
-    weapon_button.interative = true;
-    health_button.interative = true;
+    upgrade_weapon.interative = true;
+    upgrade_health.interative = true;
     quit_game_inventory.interative = true;
 
-    // set up the inventory box content
-
-    let inventory_box_titles = new PIXI.Text(
-        'Coal:\n\n Copper:\n\n Iron:\n\n Gold:\n\n Health Potino:\n\n Armor Potino:\n\n Speed Potion:\n\n Strength Potion:\n\n',
+    // visually create the names and set them into the inventory box
+    inventory_box_names = new PIXI.Text(
+        'Coal:\n\n Copper:\n\n Iron:\n\n Gold:\n\n Health Potion:\n\n Armor Potion:\n\n Speed Potion:\n\n Strength Potion:\n\n',
         {fontFamily : "\"Courier New\", Courier, monospace",
             fontSize: 20,
             fontWeight: "bold",
             fill : ["black"],
             align : 'left'});
     
-    inventory_box_titles.x = inventory_box.position.x;
-    inventory_box_titles.y = inventory_box.position.y + 20;
-    inventory_box_titles.anchor.x = .5;
-    inventory_box_titles.anchor.y = 0;
-    inventoryScene.addChild(inventory_box_titles);
+    inventory_box_names.x = inventory_box.position.x;
+    inventory_box_names.y = inventory_box.position.y + 20;
+    inventory_box_names.anchor.x = .5;
+    inventory_box_names.anchor.y = 0;
+    inventoryScene.addChild(inventory_box_names);
 
+    // visually create amounts and put them next to the names
     inventory_box_amount = new PIXI.Text(
-        toString(coal),
+        toString(coal) + "\n\n" + toString(copper) + "\n\n" + toString(iron) + "\n\n" + toString(gold) 
+        + "\n\n" + toString(health_potion) + "\n\n" + toString(armor_potion) + "\n\n" + toString(speed_potion) 
+        + "\n\n" + toString(strength_potion),
         {fontFamily : "\"Courier New\", Courier, monospace",
             fontSize: 20,
             fill : ["black"],
             align : 'left'});
 
-    inventory_box_amount.x = inventory_box.position.x - 50;
+    inventory_box_amount.x = inventory_box_names.position.x + 50;
     inventory_box_amount.y = inventory_box.position.y + 20;
     inventory_box_amount.anchor.x = .5;
     inventory_box_amount.anchor.y = 0;
     inventoryScene.addChild(inventory_box_amount);
 
+
+
+    /******** HANDLE HEAL BUTTON *******/
 
     heal_button.on("mouseover", console.log("here"))
 
@@ -1518,13 +1683,32 @@ function inventoryPageHandler(e)
         
     });
 
-    armor_button.on("mouseover", () =>{
+
+    /******** HANDLE ARMOR BUTTON *******/
+
+    upgrade_armor.on("mouseover", () =>{
         heal_text.visible = false;
         armor_text.visible = true;
         upgrade_text.visible = false;
         health_text.visible = false;
         weapon_text.visible = false;
     })
+
+    upgrade_armor.on("mousedown", () => {
+
+    })
+
+
+    /******** HANDLE ARMOR BUTTON *******/
+
+
+    /******** HANDLE ARMOR BUTTON *******/
+
+
+    /******** HANDLE ARMOR BUTTON *******/
+
+
+    /******** HANDLE ARMOR BUTTON *******/
 
 
     if (e.keyCode == 73) //i button
@@ -1535,10 +1719,10 @@ function inventoryPageHandler(e)
         inventoryScene.interactive = false;
 
         heal_button.interactive = false;
-        armor_button.interative = false;
+        upgrade_armor.interative = false;
         upgrade_button.interative = false;
-        weapon_button.interative = false;
-        health_button.interative = false;
+        upgrade_weapon.interative = false;
+        upgrade_health.interative = false;
 
         renderer.render(current_game_scene);
 
@@ -1547,3 +1731,5 @@ function inventoryPageHandler(e)
 }
 
 animate();
+
+/***************** Sams and Jacobs Code End *****************/
