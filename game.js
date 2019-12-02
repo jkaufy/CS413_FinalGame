@@ -23,6 +23,9 @@ var openingScene, gameScene_1, gameScene_2, gameScene_3,
 var inventory = {}, inventoryScene, heal_button, upgrade_button, health_button, 
     weapon_button, armor_button, description_box, inventory_box;
 
+var coal, copper, iron, gold, copper_bar, iron_bar, gold_bar, health_potion, 
+    strength_potion, armor_potion, speed_potion, leaves_of_healing;
+
 var heal_text, armor_text, upgrade_text, health_text, weapon_text;
 
 /*
@@ -33,7 +36,7 @@ var start_button, instruction_button, credits_button,
     quit_game_over_button, quit_instructions_button;
 
 var title_text, male, female, female_character, male_character, character_r, character_l, 
-    heart_1, heart_2, heart_3, heart_4, heart_5, heart_6, heart_count;
+    heart_1, heart_2, heart_3, heart_4, heart_5, heart_6, heart_count, max_hearts;
 
 /*
     Create end variables 
@@ -67,11 +70,14 @@ gameScene_1.visible = false;
 iventoryScene = new PIXI.Container();
 iventoryScene = false;
 
+gameScene_2 = new PIXI.Container();
+gameScene_2.visible = false;
+
 gameScene_3 = new PIXI.Container();
-gameScene_1.visible = false;
+gameScene_3.visible = false;
 
 gameScene_4 = new PIXI.Container();
-gameScene_1.visible = false;
+gameScene_4.visible = false;
 
 instructionScene = new PIXI.Container();
 instructionScene.visible = false;
@@ -238,8 +244,6 @@ function setup()
     quit_instructions_button.position.y = 20;
     
     quit_instructions_button.interactive = false;
-
-    instructions = new PIXI.Sprite(PIXI.Texture.from("Sprites/Menu_Buttons/Sprite_Instructions.png"));
     
     /***********************************************************************************
                                     INVENTORY SET UP
@@ -394,7 +398,7 @@ function setup()
     creditScene.addChild(credits);
 
     let credits_text = new PIXI.Text(
-        'Samantha Muellner -- Art/Level Design and Coding\n\nKyle Watson -- Coding\n\nJacob Kaufman -- Coding\n\nSteven Enriquez',
+        'Samantha Muellner -- Art/Level Design and Coding\n\nJacob Kaufman -- Coding\n\nKyle Watson -- Editing',
         {fontFamily : "\"Courier New\", Courier, monospace",
             fontSize: 22,
             fontWeight: "bold",
@@ -430,7 +434,46 @@ function setup()
     animate();
 }
 
+function start()
+{
+    start_button.interactive = false;
+    start_button.visible = false;
+    instruction_button.interactive = false;
+    instruction_button.visible = false;
+    credits_button.interactive = false;
+    credits_button.visible = false;
+    
 
+    title_text.visible = true;
+    male.visible = true;
+    female.visible = true;
+    female_character.visible = true;
+    female_character.interactive = true;
+    male_character.visible = true;
+    male_character.interactive = true;
+}
+
+function instructionHandler(e)
+{
+    instructionScene.visible = true;
+    instructionScene.interactive = true;
+    openingScene.visible = false;
+    openingScene.interactive = false;
+
+    renderer.render(instructionScene);
+}
+
+function playCredits()
+{
+    gameScene_4.interactive = false;
+    gameScene_4.visible = false;
+    creditScene.visible = true;
+    creditScene.interactive = true;
+    openingScene.visible = false;
+    openingScene.interactive = false;
+
+    renderer.render(creditScene);
+}
 
 // set up game in order to play as a female character
 function setUpSceneOne_Female()
@@ -438,31 +481,30 @@ function setUpSceneOne_Female()
     bg = new PIXI.Sprite(PIXI.Texture.from("Sprites/Backgrounds/Background_Level1_1.png"));
     gameScene_1.addChild(bg);
 
-
     // adding hearts to game
     heart_count = 3;
+    max_hearts = 3;
+    setUpHearts(gameScene_1);
 
-    heart_1 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Heart.png"));
-    heart_1.position.x = 20;
-    heart_1.position.y = 20;
-    heart_1.anchor.x = .5;
-    heart_1.anchor.y = .5;
-    gameScene_1.addChild(heart_1);
+    heart_1.visible = true;
+    heart_2.visible = true;
+    heart_3.visible = true;
+    heart_4.visible = false;
+    heart_5.visible = false;
+    heart_6.visible = false;
 
-    heart_2 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Heart.png"));
-    heart_2.position.x = heart_1.position.x + 30;
-    heart_2.position.y = 20;
-    heart_2.anchor.x = .5;
-    heart_2.anchor.y = .5;
-    gameScene_1.addChild(heart_2);
-
-    heart_3 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Heart.png"));
-    heart_3.position.x = heart_2.position.x + 30;
-    heart_3.position.y = 20;
-    heart_3.anchor.x = .5;
-    heart_3.anchor.y = .5;
-    gameScene_1.addChild(heart_3);
-
+    coal = 0;
+    copper = 0; 
+    iron = 0;
+    gold = 0;
+    copper_bar = 0;
+    iron_bar = 0; 
+    gold_bar = 0; 
+    health_potion = 0; 
+    strength_potion = 0;
+    armor_potion = 0; 
+    speed_potion = 0; 
+    leaves_of_healing = 0;
 
     // set up character animations
     var female_character_frames_r = [];
@@ -509,6 +551,8 @@ function setUpSceneOne_Female()
     gameScene_1.interactive = true;
     quit_game_button.interative = true;
     quit_game_button.visible = true;
+    inventoryScene.visible = false;
+    inventoryScene.interative = false;
 
     player.visible = true;
     player.interactive = true;
@@ -527,28 +571,28 @@ function setUpSceneOne_Male()
 
     // adding hearts to game
     heart_count = 3;
+    max_hearts = 3;
+    setUpHearts(gameScene_1);
 
-    heart_1 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Heart.png"));
-    heart_1.position.x = 20;
-    heart_1.position.y = 20;
-    heart_1.anchor.x = .5;
-    heart_1.anchor.y = .5;
-    gameScene_1.addChild(heart_1);
+    heart_1.visible = true;
+    heart_2.visible = true;
+    heart_3.visible = true;
+    heart_4.visible = false;
+    heart_5.visible = false;
+    heart_6.visible = false;
 
-    heart_2 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Heart.png"));
-    heart_2.position.x = heart_1.position.x + 30;
-    heart_2.position.y = 20;
-    heart_2.anchor.x = .5;
-    heart_2.anchor.y = .5;
-    gameScene_1.addChild(heart_2);
-
-    heart_3 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Heart.png"));
-    heart_3.position.x = heart_2.position.x + 30;
-    heart_3.position.y = 20;
-    heart_3.anchor.x = .5;
-    heart_3.anchor.y = .5;
-    gameScene_1.addChild(heart_3);
-
+    coal = 0;
+    copper = 0; 
+    iron = 0;
+    gold = 0;
+    copper_bar = 0;
+    iron_bar = 0; 
+    gold_bar = 0; 
+    health_potion = 0; 
+    strength_potion = 0;
+    armor_potion = 0; 
+    speed_potion = 0; 
+    leaves_of_healing = 0;
 
     // setting up character animations
     var male_character_frames_r = [];
@@ -596,6 +640,8 @@ function setUpSceneOne_Male()
     gameScene_1.interactive = true;
     quit_game_button.interative = true;
     quit_game_button.visible = true;
+    inventoryScene.visible = false;
+    inventoryScene.interative = false;
 
     player.visible = true;
     player.interactive = true;
@@ -611,6 +657,34 @@ function setUpSceneTwo()
     bg = new PIXI.Sprite(PIXI.Texture.from("Sprites/Backgrounds/Background_Level2_1.png"));
     gameScene_2.addChild(bg);
 
+    setUpHearts(gameScene_2);
+
+    heart_2.visible = false;
+    heart_3.visible = false;
+    heart_4.visible = false;
+    heart_5.visible = false;
+    heart_6.visible = false;
+
+    switch(heart_max){
+        case 6:
+            heart_6.visible = true;
+        
+        case 5:
+            heart_5.visible = true;
+        
+        case 4: 
+            heart_4.visible = true;
+        
+        case 3:
+            heart_3.visible = true;
+
+        case 2:
+            heart_2.visible = true;
+
+        default:
+            heart_1.visible = true;
+    }
+
     player = character_r;
     player.x = 50;
     player.y = 50;
@@ -624,6 +698,8 @@ function setUpSceneTwo()
     gameScene_1.interactive = false;
     gameScene_2.visible = true;
     gameScene_2.interactive = true;
+    inventoryScene.visible = false;
+    inventoryScene.interative = false;
 }
 
 // set up scene three
@@ -631,6 +707,34 @@ function setUpSceneThree()
 {
     bg = new PIXI.Sprite(PIXI.Texture.from("Sprites/Backgrounds/Background_Level3_1.png"));
     gameScene_3.addChild(bg);
+
+    setUpHearts(gameScene_3);
+
+    heart_2.visible = false;
+    heart_3.visible = false;
+    heart_4.visible = false;
+    heart_5.visible = false;
+    heart_6.visible = false;
+
+    switch(heart_max){
+        case 6:
+            heart_6.visible = true;
+        
+        case 5:
+            heart_5.visible = true;
+        
+        case 4: 
+            heart_4.visible = true;
+        
+        case 3:
+            heart_3.visible = true;
+
+        case 2:
+            heart_2.visible = true;
+
+        default:
+            heart_1.visible = true;
+    }
 
     player = character_r;
     player.x = 50;
@@ -645,6 +749,8 @@ function setUpSceneThree()
     gameScene_2.interactive = false;
     gameScene_3.visible = true;
     gameScene_3.interactive = true;
+    inventoryScene.visible = false;
+    inventoryScene.interative = false;
 }
 
 // set up scene four
@@ -652,6 +758,34 @@ function setUpSceneFour()
 {
     bg = new PIXI.Sprite(PIXI.Texture.from("Sprites/Backgrounds/Background_Level4_1.png"));
     gameScene_4.addChild(bg);
+
+    setUpHearts(gameScene_4);
+
+    heart_2.visible = false;
+    heart_3.visible = false;
+    heart_4.visible = false;
+    heart_5.visible = false;
+    heart_6.visible = false;
+
+    switch(heart_max){
+        case 6:
+            heart_6.visible = true;
+        
+        case 5:
+            heart_5.visible = true;
+        
+        case 4: 
+            heart_4.visible = true;
+        
+        case 3:
+            heart_3.visible = true;
+
+        case 2:
+            heart_2.visible = true;
+
+        default:
+            heart_1.visible = true;
+    }
 
     player = character_r;
     player.x = 50;
@@ -666,12 +800,217 @@ function setUpSceneFour()
     gameScene_3.interactive = false;
     gameScene_4.visible = true;
     gameScene_4.interactive = true;
+    inventoryScene.visible = false;
+    inventoryScene.interative = false;
 }
 
 // add the appropriate amount of hearts to the game
-function addHearts(currentScene)
+function setUpHearts(currentScene)
 {
+    /***************** HEART 1 ********************/
+
+    heart_1 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Heart.png"));
+    heart_1.position.x = 20;
+    heart_1.position.y = 20;
+    heart_1.anchor.x = .5;
+    heart_1.anchor.y = .5;
+
+
+    currentScene.addChild(heart_1);
+
+
+    /***************** HEART 2 ********************/
+
+    // check whether or not to make the heart black
+    if(max_hearts > 1)
+    {
+        heart_2 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Heart.png"));
+
+    }
+    else
+    {
+        heart_2 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Black_Heart.png"))
+    }
+
+    heart_2.position.x = heart_1.position.x + 30;
+    heart_2.position.y = 20;
+    heart_2.anchor.x = .5;
+    heart_2.anchor.y = .5;
+
+    currentScene.addChild(heart_2);
+
+
+    /***************** HEART 3 ********************/
+
+    // check whether or not to make the heart black
+    if(max_hearts > 2)
+    {
+        heart_3 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Heart.png"));
+
+    }
+    else
+    {
+        heart_3 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Black_Heart.png"))
+    }
+
+    heart_3.position.x = heart_2.position.x + 30;
+    heart_3.position.y = 20;
+    heart_3.anchor.x = .5;
+    heart_3.anchor.y = .5;
+
+
+    currentScene.addChild(heart_3);
+
+
+    /***************** HEART 4 ********************/
+
+    // check whether or not to make the heart black
+    if(max_hearts > 3)
+    {
+        heart_4 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Heart.png"));
+
+    }
+    else
+    {
+        heart_4 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Black_Heart.png"))
+    }
+
+    heart_4.position.x = heart_3.position.x + 30;
+    heart_4.position.y = 20;
+    heart_4.anchor.x = .5;
+    heart_4.anchor.y = .5;
+
+
+    currentScene.addChild(heart_4);
+
+
+    /***************** HEART 5 ********************/
+
+    // check whether or not to make the heart black
+    if(max_hearts > 4)
+    {
+        heart_5 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Heart.png"));
+
+    }
+    else
+    {
+        heart_5 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Black_Heart.png"))
+    }
+
+    heart_5.position.x = heart_4.position.x + 30;
+    heart_5.position.y = 20;
+    heart_5.anchor.x = .5;
+    heart_5.anchor.y = .5;
+
+    currentScene.addChild(heart_5);
+
+
+    /***************** HEART 6 ********************/
+
+    if(max_hearts > 5)
+    {
+        heart_6 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Heart.png"));
+
+    }
+    else
+    {
+        heart_6 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Black_Heart.png"))
+    }
+
+    heart_6.position.x = heart_5.position.x + 30;
+    heart_6.position.y = 20;
+    heart_6.anchor.x = .5;
+    heart_6.anchor.y = .5;
+
+    if(max_hearts > 5)
+    {
+        heart_6.visible = true;
+    }
+
+    currentScene.addChild(heart_6);
+}
+
+function addHeart()
+{
+    heart_count ++;
+    max_hearts ++;
+
+    // if there is a 5th heart, add a 6th one
+    switch(heart_count){
+        case 6:
+            heart_6.visible = true;
+
+        case 5:
+            heart_5.visible = true;
+
+        case 4:
+            heart_4.visible = true;
+
+        case 3:
+            heart_3.visible = true;
+
+        default: // there was only one heart left, and so now there will be 2
+            heart_2.visible = true;
+    }
+}
+
+// function that will change a black heart to a red one
+function heal()
+{
+    heart_count ++;
+
+    switch(heart_count){
+        case 6:
+            heart_6 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Heart.png"));
+            current_game_scene.heart_6 = heart_6;
+
+        case 5:
+            heart_5 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Heart.png"));
+            current_game_scene.heart_5 = heart_5;
+
+        case 4:
+            heart_4 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Heart.png"));
+            current_game_scene.heart_4 = heart_4;
+
+        case 3:
+            heart_3 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Heart.png"));
+            current_game_scene.heart_3 = heart_3;
+
+        default:
+            heart_2 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Heart.png"));
+            current_game_scene.heart_2 = heart_2;
+    }
+}
+
+// function that will change a red heart to a black one
+function takeDamage()
+{
+    heart_count --;
     
+    switch(heart_count){
+        case 5:
+            heart_6 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Black_Heart.png"));
+            current_game_scene.heart_6 = heart_6;
+
+        case 4:
+            heart_5 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Black_Heart.png"));
+            current_game_scene.heart_5 = heart_5;
+
+        case 3:
+            heart_4 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Black_Heart.png"));
+            current_game_scene.heart_4 = heart_4;
+
+        case 2:
+            heart_3 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Black_Heart.png"));
+            current_game_scene.heart_3 = heart_3;
+
+        case 1:
+            heart_2 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Black_Heart.png"));
+            current_game_scene.heart_2 = heart_2;
+
+        default: // lost last heart
+            end();
+    }
 }
 
 // all the code that will run at the end of the game
@@ -686,25 +1025,7 @@ function end()
     gameOverScene.interactive = true;
 }
 
-function start()
-{
-    start_button.interactive = false;
-    start_button.visible = false;
-    instruction_button.interactive = false;
-    instruction_button.visible = false;
-    credits_button.interactive = false;
-    credits_button.visible = false;
-    
-
-    title_text.visible = true;
-    male.visible = true;
-    female.visible = true;
-    female_character.visible = true;
-    female_character.interactive = true;
-    male_character.visible = true;
-    male_character.interactive = true;
-}
-
+// activated when most quit buttons are pressed, save for quit_to_hom and quit_gameover
 function quit()
 {
     // if quit, show game over scene and get ride of game scene
@@ -758,28 +1079,6 @@ function quit_gameover()
     
 
     renderer.render(openingScene);
-}
-
-function playCredits()
-{
-    gameScene_4.interactive = false;
-    gameScene_4.visible = false;
-    creditScene.visible = true;
-    creditScene.interactive = true;
-    openingScene.visible = false;
-    openingScene.interactive = false;
-
-    renderer.render(creditScene);
-}
-
-function instructionHandler(e)
-{
-    instructionScene.visible = true;
-    instructionScene.interactive = true;
-    openingScene.visible = false;
-    openingScene.interactive = false;
-
-    renderer.render(instructionScene);
 }
 
 function collisionBetween(sprite1, sprite2)
@@ -946,14 +1245,158 @@ function animate()
 
             for (index = 0; index < zombies.length; index++)
             {
-                 // move the enemy right
-                 moveZombies(zombies[index]);
+                // move the enemy right
+                moveZombies(zombies[index]);
+            }
+
+            if(hitFromAbove || hitFromBelow || hitFromLeft || hitFromRight)
+            {
+                takeDamage();
             }
     
             renderer.render(gameScene_1);
         }
 
     }
+
+    else if(gameScene_2.interactive)
+    {
+
+        // do something
+        if (inventoryPage)
+        {
+            quit_game_inventory.interactive = true;
+            quit_game_inventory.on('mousedown', quit);
+            
+            document.addEventListener('keydown', inventoryPageHandler);
+
+            renderer.render(inventoryScene);
+        }
+
+        else
+        {
+            quit_game_button.interactive = true;
+            quit_game_button.on('mousedown', quit);
+    
+            if (beginWave == true)
+            {
+                // count down the wave
+    
+                // begin wave
+                startWave();
+    
+            }
+    
+            document.addEventListener('keydown', keydownHandler);
+
+            for (index = 0; index < zombies.length; index++)
+            {
+                // move the enemy right
+                moveZombies(zombies[index]);
+            }
+
+            if(hitFromAbove || hitFromBelow || hitFromLeft || hitFromRight)
+            {
+                takeDamage();
+            }
+    
+            renderer.render(gameScene_2);
+        }
+
+    }
+
+    else if(gameScene_3.interactive)
+    {
+
+        // do something
+        if (inventoryPage)
+        {
+            quit_game_inventory.interactive = true;
+            quit_game_inventory.on('mousedown', quit);
+            
+            document.addEventListener('keydown', inventoryPageHandler);
+
+            renderer.render(inventoryScene);
+        }
+
+        else
+        {
+            quit_game_button.interactive = true;
+            quit_game_button.on('mousedown', quit);
+    
+            if (beginWave == true)
+            {
+                // count down the wave
+    
+                // begin wave
+                startWave();
+    
+            }
+    
+            document.addEventListener('keydown', keydownHandler);
+
+            for (index = 0; index < zombies.length; index++)
+            {
+                // move the enemy right
+                moveZombies(zombies[index]);
+            }
+
+            if(hitFromAbove || hitFromBelow || hitFromLeft || hitFromRight)
+            {
+                takeDamage();
+            }
+    
+            renderer.render(gameScene_3);
+        }
+
+    }
+
+    else if(gameScene_4.interactive)
+    {
+
+        // do something
+        if (inventoryPage)
+        {
+            quit_game_inventory.interactive = true;
+            quit_game_inventory.on('mousedown', quit);
+            
+            document.addEventListener('keydown', inventoryPageHandler);
+
+            renderer.render(inventoryScene);
+        }
+
+        else
+        {
+            quit_game_button.interactive = true;
+            quit_game_button.on('mousedown', quit);
+    
+            if (beginWave == true)
+            {
+                // count down the wave
+    
+                // begin wave
+                startWave();
+    
+            }
+    
+            document.addEventListener('keydown', keydownHandler);
+
+            for (index = 0; index < zombies.length; index++)
+            {
+                // move the enemy right
+                moveZombies(zombies[index]);
+            }
+
+            if(hitFromAbove || hitFromBelow || hitFromLeft || hitFromRight)
+            {
+                takeDamage();
+            }
+    
+            renderer.render(gameScene_4);
+        }
+
+    }
+
     else if(instructionScene.interactive)
     { 
         quit_instructions_button.interactive = true;
@@ -1028,6 +1471,7 @@ function inventoryPageHandler(e)
     upgrade_button.interative = true;
     weapon_button.interative = true;
     health_button.interative = true;
+    quit_game_inventory.interative = true;
 
     // set up the inventory box content
 
@@ -1039,14 +1483,14 @@ function inventoryPageHandler(e)
             fill : ["black"],
             align : 'left'});
     
-    inventory_box_titles.x = inventory_box.position.x - 50;
+    inventory_box_titles.x = inventory_box.position.x;
     inventory_box_titles.y = inventory_box.position.y + 20;
     inventory_box_titles.anchor.x = .5;
     inventory_box_titles.anchor.y = 0;
     inventoryScene.addChild(inventory_box_titles);
 
     inventory_box_amount = new PIXI.Text(
-        'here Im same asdfaefaefwefawef',
+        toString(coal),
         {fontFamily : "\"Courier New\", Courier, monospace",
             fontSize: 20,
             fill : ["black"],
@@ -1059,13 +1503,20 @@ function inventoryPageHandler(e)
     inventoryScene.addChild(inventory_box_amount);
 
 
-    heal_button.on("mouseover", () => {
-        heal_text.visible = true;
-        armor_text.visible = false;
-        upgrade_text.visible = false;
-        health_text.visible = false;
-        weapon_text.visible = false;
-    })
+    heal_button.on("mouseover", console.log("here"))
+
+    heal_button.on("mousedown", () => {
+        if(leaf_of_healing > 3)
+        {
+            addHeart();
+        }
+
+        else // display a message that you need to have 4 leaves of healing
+        {
+
+        }
+        
+    });
 
     armor_button.on("mouseover", () =>{
         heal_text.visible = false;
@@ -1089,7 +1540,7 @@ function inventoryPageHandler(e)
         weapon_button.interative = false;
         health_button.interative = false;
 
-        renderer.render(gameScene_1);
+        renderer.render(current_game_scene);
 
         document.removeEventListener('keydown', inventoryPageHandler);
     }
