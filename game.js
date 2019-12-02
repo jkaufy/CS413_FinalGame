@@ -63,6 +63,22 @@ var hitFromAbove, hitFromBelow, hitFromLeft, hitFromRight;
 
 var bg;
 
+/*
+    Create variable for number zobies killed 
+*/
+var deathCount = 0, deathCountText; 
+
+/*
+    Create the style for the output of the death count 
+*/
+const deathCountStyle = new PIXI.TextStyle({
+    fontSize: 22,
+    fontWeight: 'bold',
+    fill: ["#fa0"],
+    strokeThickness: 5
+  });
+
+
 // our menu that will offer the player to 'play', see 'instructions', or see 'credits'
 openingScene = new PIXI.Container();
 openingScene.visible = true;
@@ -539,7 +555,7 @@ function setup()
     creditScene.addChild(credits);
 
     let credits_text = new PIXI.Text(
-        'Samantha Muellner -- Art/Level Design and Coding\n\nJacob Kaufman -- Coding\n\nKyle Watson -- Editing',
+        'Samantha Muellner -- Art/Level Design and Coding\n\nJacob Kaufman -- Coding\n\nKyle Watson -- Editing, \nGitHub owner, Website Manager and Coding',
         {fontFamily : "\"Courier New\", Courier, monospace",
             fontSize: 22,
             fontWeight: "bold",
@@ -621,6 +637,11 @@ function setUpSceneOne_Female()
 {
     bg = new PIXI.Sprite(PIXI.Texture.from("Sprites/Backgrounds/Background_Level1_1.png"));
     gameScene_1.addChild(bg);
+
+    deathCountText = new PIXI.Text("Zombies Killed : " + deathCount + " / 100", deathCountStyle);
+    deathCountText.position.x = 505;
+
+    gameScene_1.addChild(deathCountText);
 
     // adding hearts to game
     heart_count = 3;
@@ -710,6 +731,11 @@ function setUpSceneOne_Male()
     bg = new PIXI.Sprite(PIXI.Texture.from("Sprites/Backgrounds/Background_Level1_1.png"));
     gameScene_1.addChild(bg);
 
+    deathCountText = new PIXI.Text("Zombies Killed: " + deathCount + " / 100", deathCountStyle);
+    deathCountText.position.x = 505;
+
+    gameScene_1.addChild(deathCountText);
+
     // adding hearts to game
     heart_count = 3;
     max_hearts = 3;
@@ -798,6 +824,11 @@ function setUpSceneTwo()
     bg = new PIXI.Sprite(PIXI.Texture.from("Sprites/Backgrounds/Background_Level2_1.png"));
     gameScene_2.addChild(bg);
 
+    deathCount = 0; 
+    deathCountText = new PIXI.Text("Zombies Killed: " + deathCount + " / 100", deathCountStyle);
+    deathCountText.position.x = 505;
+    gameScene_2.addChild(deathCountText);
+
     setUpHearts(gameScene_2);
 
     heart_2.visible = false;
@@ -849,6 +880,12 @@ function setUpSceneThree()
     bg = new PIXI.Sprite(PIXI.Texture.from("Sprites/Backgrounds/Background_Level3_1.png"));
     gameScene_3.addChild(bg);
 
+    deathCount = 0; 
+    deathCountText = new PIXI.Text("Zombies Killed: " + deathCount + " / 100", deathCountStyle);
+    deathCountText.position.x = 505;
+
+    gameScene_3.addChild(deathCountText);
+
     setUpHearts(gameScene_3);
 
     heart_2.visible = false;
@@ -899,6 +936,11 @@ function setUpSceneFour()
 {
     bg = new PIXI.Sprite(PIXI.Texture.from("Sprites/Backgrounds/Background_Level4_1.png"));
     gameScene_4.addChild(bg);
+
+    deathCountText = new PIXI.Text("Zombies Killed: " + deathCount + " / 100", deathCountStyle);
+    deathCountText.position.x = 505;
+
+    gameScene_4.addChild(deathCountText);
 
     setUpHearts(gameScene_4);
 
@@ -1155,6 +1197,12 @@ function takeDamage()
     }
 }
 
+// Updates the nubmer zombies killed. 
+function updateDeath() {
+    deathCount += 1;
+    gameScoreText.text = "Zombies Killed: " + deathCount;
+  }
+  
 // all the code that will run at the end of the game
 function end()
 {
@@ -1316,7 +1364,7 @@ function startWave ()
         zombie = new PIXI.Sprite(PIXI.Texture.from("Sprites/Monsters/Golems/Gold_Golum_Sword1.png"));
 
         zombie.x = (Math.random() * 400);
-        zombie.y = (Math.random()* 400);
+        zombie.y = (Math.random() * 400);
         zombies.push(zombie);
         gameScene_1.addChild(zombie);
     }
@@ -1420,7 +1468,7 @@ function animate()
                 // move the enemy right
                 moveZombies(zombies[index]);
             }
-
+            
             if(hitFromAbove || hitFromBelow || hitFromLeft || hitFromRight)
             {
                 takeDamage();
@@ -1612,29 +1660,57 @@ function keydownHandler(e)
 {
     if (e.keyCode == 65) //A //LEFT
     {
+
+        // Handles going off the screen the left 
+        if( player.x  < 30 )
+        {
+            player.x = 30;
+        }
+
         character_l.x = player.x;
         character_l.y = player.y;
         player = character_l;
         
         player.x -= 10;
+
+       
     }
     else if (e.keyCode == 68) //D //RIGHT
     {
+        // Handles going off the right of the screen 
+        if( player.x > GAME_WIDTH - 30 )
+        {         
+            player.x = GAME_WIDTH - 30;
+        }
+
         character_r.x = player.x;
         character_r.y = player.y;
         player = character_r;
         
         player.x += 10;
+
     }
     else if (e.keyCode == 83) //S //DOWN
     {
+        if( player.y > GAME_HEIGHT - 40)
+        {
+            player.y = GAME_HEIGHT - 40;
+        }
+
         player.y += 10;
+        
     }
     else if (e.keyCode == 87) //W //UP
     {
+        // Handles going off the top of the screen 
+        if( player.y < 40 )
+        {
+            player.y = 50
+        }
+        
         player.y -= 10;
     }
-    else if (e.keyCode == 73)
+    else if (e.keyCode == 73) // I //INVENTORY 
     {
         inventoryPage = true;
 
