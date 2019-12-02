@@ -12,6 +12,8 @@ PIXI.SCALE_MODES.DEFAULT = PIXI.SCALE_MODES.NEAREST;
 
 var beginWave = true;
 
+var bgMusicPlaying = false;
+
 /*
     Create game scene variables 
 */
@@ -112,6 +114,11 @@ inventoryScene.visible = false;
 
 PIXI.loader
     .load(setup);
+
+var bgMusic = PIXI.sound.Sound.from({
+    url: 'sound/bgMusic.wav',
+    loop: true
+    });
 
 
 // This will initialize all our sprites and start our gameloop
@@ -1206,6 +1213,9 @@ function updateDeath() {
 // all the code that will run at the end of the game
 function end()
 {
+    bgMusic.stop();
+    bgMusicPlaying = false;
+
     gameScene_1.interactive = false;
     gameScene_2.interactive = false;
     gameScene_3.interactive = false;
@@ -1359,6 +1369,11 @@ function spawnZombies()
 function startWave ()
 {
 
+    if(!bgMusicPlaying) {
+        bgMusic.play();
+        bgMusicPlaying = true;
+    }
+
     for (index  = 0; index < amount_of_zombies; index++)
     {
         zombie = new PIXI.Sprite(PIXI.Texture.from("Sprites/Monsters/Golems/Gold_Golum_Sword1.png"));
@@ -1370,7 +1385,6 @@ function startWave ()
     }
 
     beginWave = false;
-
 
 }
 
@@ -1451,7 +1465,6 @@ function animate()
             if (beginWave == true)
             {
                 // count down the wave
-                //console.log("hellow");
                 
     
                 // begin wave
