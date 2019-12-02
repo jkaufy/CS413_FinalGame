@@ -1274,46 +1274,56 @@ function finished()
 
 var zombies = [];
 var inventoryPage = false;
-var amount_of_zombies  = 10;
+var amount_of_zombies  = 1;
 
-var bullet_speed = 5;
-var bullets = [];
+var currentDate = new Date();
+var startTime = currentDate.getSeconds();
+var currentTime;
 
-var golds = [];
-var silvers = [];
-var bronzes = [];
-
-var amount_of_items = 10;
+var number_of_zombies = 0;
 
 var zombieSpeed = .2;
 
+function spawnZombies()
+{
+
+    currentDate = new Date();
+
+    if (currentDate.getSeconds() != currentTime)
+    {
+
+        currentTime = currentDate.getSeconds();
+
+        if((startTime-currentTime) % 10 == 0)
+        {
+            beginWave = true;
+            
+            number_of_zombies += amount_of_zombies;
+        
+        }
+    }
+    
+    
+}
+
+
+
 function startWave ()
 {
+
     for (index  = 0; index < amount_of_zombies; index++)
     {
         zombie = new PIXI.Sprite(PIXI.Texture.from("Sprites/Monsters/Golems/Gold_Golum_Sword1.png"));
-        zombies.push(zombie);
 
         zombie.x = (Math.random() * 400);
         zombie.y = (Math.random()* 400);
+        zombies.push(zombie);
         gameScene_1.addChild(zombie);
     }
 
-    var item;
-
-    /*for (index = 0; index < amount_of_items; index++)
-    {
-        item = (Math.random() * 3) | 0;
-
-        if(item == 0)
-        {
-            gold = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Gold_Bar.png"));
-        }
-    }*/
-
-
     beginWave = false;
-    amount_of_zombies += 2;
+
+
 }
 
 function moveZombies( zombie )
@@ -1393,9 +1403,14 @@ function animate()
             if (beginWave == true)
             {
                 // count down the wave
+                //console.log("hellow");
+                
     
                 // begin wave
-                startWave();
+                if (beginWave == true)
+                {
+                    startWave();
+                }
     
             }
     
@@ -1411,8 +1426,12 @@ function animate()
             {
                 takeDamage();
             }
+
+            spawnZombies();
     
             renderer.render(gameScene_1);
+
+            
         }
 
     }
@@ -1458,6 +1477,7 @@ function animate()
             {
                 takeDamage();
             }
+            spawnZombies();
     
             renderer.render(gameScene_2);
         }
@@ -1505,6 +1525,8 @@ function animate()
             {
                 takeDamage();
             }
+
+            spawnZombies();
     
             renderer.render(gameScene_3);
         }
@@ -1552,6 +1574,8 @@ function animate()
             {
                 takeDamage();
             }
+
+            spawnZombies();
     
             renderer.render(gameScene_4);
         }
@@ -1628,7 +1652,7 @@ function inventoryPageHandler(e)
 {
     heal_button.interactive = true;
     upgrade_armor.interative = true;
-    upgrade_button.interative = true;
+   // upgrade_button.interative = true;
     upgrade_weapon.interative = true;
     upgrade_health.interative = true;
     quit_game_inventory.interative = true;
@@ -1668,7 +1692,7 @@ function inventoryPageHandler(e)
 
     /******** HANDLE HEAL BUTTON *******/
 
-    heal_button.on("mouseover", console.log("here"))
+    //heal_button.on("mouseover", console.log("here"))
 
     heal_button.on("mousedown", () => {
         if(leaf_of_healing > 3)
@@ -1715,7 +1739,7 @@ function inventoryPageHandler(e)
     {
         inventoryPage = false;
 
-        inventoryScene.visible = false;
+        //inventoryScene.visible = false;
         inventoryScene.interactive = false;
 
         heal_button.interactive = false;
