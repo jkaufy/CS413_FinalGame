@@ -1208,24 +1208,21 @@ function heal()
     }
 }
 
-// function that will change a red heart to a black one
 function takeDamage()
 {
-    heart_count --;
+    hit = true; 
+ 
+    console.log("Inside takeDamage: " + hit);
+    heart_count -= 1;
     
     switch(heart_count)
     {
         case 2:
-            heart_3 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Black_Heart.png"));
-            current_game_scene.heart_3 = heart_3;
+            heart_3.visible = false; 
+            break;
 
         case 1:
-            var newHeart_2 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Black_Heart.png"));
-            newHeart_2.x = heart_2.x;
-            newHeart_2.y = heart_2.y;
-            // current_game_scene.heart_3 = heart_3;
             heart_2.visible = false;  
-            newHeart_2.visible = true;
             break; 
             
         default: // lost last heart
@@ -1519,9 +1516,36 @@ function animate()
                 // move the enemy right
                 moveZombies(zombies[index]);
 
-                // UNCOMMENT THIS FOR COLLISION (AND LAG) (Currently shows collisions in times where it shouldn't)
-                if(collisionDetection(player, zombies[index])) {
-                    console.log("HIT")
+                console.log(hit);
+                for (index = 0; index < zombies.length; index++)
+                {
+                    // move the enemy right
+                    moveZombies(zombies[index]);
+    
+                    // UNCOMMENT THIS FOR COLLISION (AND LAG) (Currently shows collisions in times where it shouldn't)
+                    if(collisionDetection(player, zombies[index]))
+                    {
+                        if( !hit )
+                        {
+                            console.log("You got hit");
+                            takeDamage();
+                        }
+                        else
+                        {
+                            currentDate = new Date();
+    
+                            if (currentDate.getSeconds() != currentTime)
+                            {
+                        
+                                currentTime = currentDate.getSeconds();
+                        
+                                if((startTime-currentTime) % 4 == 0)
+                                {
+                                   hit = false;                             
+                                }
+                            }
+                        }
+                    }
                 }
 
                 for (bIndex = 0; bIndex < bullets.length; bIndex++)
