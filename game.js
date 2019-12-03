@@ -1813,17 +1813,12 @@ function keydownHandler(e)
         
         
     }
-<<<<<<< HEAD
-
     // Steven Start
     else if (e.keyCode == 76) //L //SHOOT
     {
         fireBullet(player.position.x, player.position.y);
     }
     // Steven End
-
-=======
->>>>>>> 71fa0a798c347dc7b06c7550676d24957a2aee86
     else if ( e.keyCode == 74) // J // ATTACK 
     {
         attack();
