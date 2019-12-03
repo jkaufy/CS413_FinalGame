@@ -1523,6 +1523,14 @@ function animate()
                 if(collisionDetection(player, zombies[index])) {
                     console.log("HIT")
                 }
+
+                for (bIndex = 0; bIndex < bullets.length; bIndex++)
+                {
+                    // UNCOMMENT THIS FOR COLLISION (AND LAG) (Currently shows collisions in times where it shouldn't)
+                    if(collisionDetection(bullets[bIndex], zombies[index])) {
+                        gameScene_1.removeChild(zombies[index]);
+                    }
+                }
             }
             spawnZombies();
     
