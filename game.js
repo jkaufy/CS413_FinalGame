@@ -132,6 +132,10 @@ var bgMusic = PIXI.sound.Sound.from({
     loop: true
 });
 
+var shootSound = PIXI.sound.Sound.from({
+    url: 'sound/ShootBullet.wav',
+});
+
 
 // This will initialize all our sprites and start our gameloop
 function setup()
@@ -576,7 +580,7 @@ function setup()
     creditScene.addChild(credits);
 
     let credits_text = new PIXI.Text(
-        'Samantha Muellner -- Art/Level Design and Coding\n\nJacob Kaufman -- Coding\n\nKyle Watson -- GitHub owner and Coding\n\nStephen -- Coding',
+        'Samantha Muellner -- Art/Level Design and Coding\n\nJacob Kaufman -- Coding\n\nKyle Watson -- GitHub owner and Coding\n\nSteven Enriquez -- Coding',
         {fontFamily : "\"Courier New\", Courier, monospace",
             fontSize: 22,
             fontWeight: "bold",
@@ -1203,51 +1207,31 @@ function heal()
 }
 
 // function that will change a red heart to a black one
-var currentDate = new Date();
-var currentTime;
-
 function takeDamage()
 {
-    hit = true; 
- 
-    console.log("Inside takeDamage: " + hit);
-    heart_count -= 1;
+    heart_count --;
     
-    switch(heart_count)
-    {
-        // case 5:
-        //     heart_6 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Black_Heart.png"));
-        //     current_game_scene.heart_6 = heart_6;
-        //     break; 
+    switch(heart_count){
+        case 5:
+            heart_6 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Black_Heart.png"));
+            current_game_scene.heart_6 = heart_6;
 
-        // case 4:
-        //     heart_5 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Black_Heart.png"));
-        //     current_game_scene.heart_5 = heart_5;
-        //     break; 
+        case 4:
+            heart_5 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Black_Heart.png"));
+            current_game_scene.heart_5 = heart_5;
 
-        // case 3:
-        //     heart_4 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Black_Heart.png"));
-        //     current_game_scene.heart_4 = heart_4;
-        //     break;
+        case 3:
+            heart_4 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Black_Heart.png"));
+            current_game_scene.heart_4 = heart_4;
 
         case 2:
-            var newHeart_3 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Black_Heart.png"));
-            newHeart_3.x = heart_3.x;
-            newHeart_3.y = heart_3.y;
-            // current_game_scene.heart_3 = heart_3;
-            heart_3.visible = false; 
-            newHeart_3.visible = true;
-            break;
+            heart_3 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Black_Heart.png"));
+            current_game_scene.heart_3 = heart_3;
 
         case 1:
-            var newheart_2 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Black_Heart.png"));
-            newHeart_2.x = heart_2.x;
-            newHeart_2.y = heart_2.y;
-            // current_game_scene.heart_3 = heart_3;
-            heart_2.visible = false;  
-            newHeart_2.visible = true;
-            break; 
-            
+            heart_2 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Black_Heart.png"));
+            current_game_scene.heart_2 = heart_2;
+
         default: // lost last heart
             end();
     }
@@ -1449,7 +1433,6 @@ function moveZombies( zombie )
 
 
 
-
 /***************** Sams and Jacobs Code Start *****************/
 
 function animate()
@@ -1486,6 +1469,11 @@ function animate()
     {
         current_game_scene = gameScene_1;
 
+        for(var b=bullets.length-1;b>=0;b--){
+            bullets[b].position.x += 10+Math.cos(5)*10;
+            bullets[b].position.y += 10+Math.sin(5)*10;
+          }
+
         // do something
         if (inventoryPage)
         {
@@ -1512,35 +1500,14 @@ function animate()
     
             document.addEventListener('keydown', keydownHandler);
 
-            console.log(hit);
             for (index = 0; index < zombies.length; index++)
             {
                 // move the enemy right
                 moveZombies(zombies[index]);
 
                 // UNCOMMENT THIS FOR COLLISION (AND LAG) (Currently shows collisions in times where it shouldn't)
-                if(collisionDetection(player, zombies[index]))
-                {
-                    if( !hit )
-                    {
-                        console.log("You got hit");
-                        takeDamage();
-                    }
-                    else
-                    {
-                        currentDate = new Date();
-
-                        if (currentDate.getSeconds() != currentTime)
-                        {
-                    
-                            currentTime = currentDate.getSeconds();
-                    
-                            if((startTime-currentTime) % 2 == 0)
-                            {
-                               hit = false;                             
-                            }
-                        }
-                    }
+                if(collisionDetection(player, zombies[index])) {
+                    console.log("HIT")
                 }
             }
             spawnZombies();
@@ -1761,6 +1728,12 @@ function keydownHandler(e)
         
     }
 
+    else if (e.keyCode == 76) //L //SHOOT
+    {
+        mouseCoords = renderer.plugins.interaction.mouse.global;
+        fireBullet(player.position.x, player.position.y, mouseCoords);
+    }
+
     else if (e.keyCode == 73) // I //INVENTORY 
     {
         if(inventoryPage)
@@ -1798,6 +1771,17 @@ function keydownHandler(e)
     }
 }
 
+var bullets = [];
+
+function fireBullet(playerX, playerY) {
+    var bullet = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Bullet.png"));
+    bullet.position.x = playerX;
+    bullet.position.y = playerY;
+    gameScene_1.addChild(bullet);
+    bullets.push(bullet);
+    shootSound.play();
+}
+
 function inventoryPageHandler(e)
 {
     heal_button.interactive = true;
@@ -1806,7 +1790,6 @@ function inventoryPageHandler(e)
     upgrade_weapon.interative = true;
     upgrade_health.interative = true;
     quit_game_inventory.interative = true;
-
 
     // visually create the names and set them into the inventory box
     inventory_box_names = new PIXI.Text(
