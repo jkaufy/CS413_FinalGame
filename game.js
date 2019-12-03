@@ -88,6 +88,11 @@ const deathCountStyle = new PIXI.TextStyle({
   });
 
 
+  /*
+        hit variable
+  */
+ var hit = false; 
+
 // our menu that will offer the player to 'play', see 'instructions', or see 'credits'
 openingScene = new PIXI.Container();
 openingScene.visible = true;
@@ -1198,31 +1203,51 @@ function heal()
 }
 
 // function that will change a red heart to a black one
+var currentDate = new Date();
+var currentTime;
+
 function takeDamage()
 {
-    heart_count --;
+    hit = true; 
+ 
+    console.log("Inside takeDamage: " + hit);
+    heart_count -= 1;
     
-    switch(heart_count){
-        case 5:
-            heart_6 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Black_Heart.png"));
-            current_game_scene.heart_6 = heart_6;
+    switch(heart_count)
+    {
+        // case 5:
+        //     heart_6 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Black_Heart.png"));
+        //     current_game_scene.heart_6 = heart_6;
+        //     break; 
 
-        case 4:
-            heart_5 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Black_Heart.png"));
-            current_game_scene.heart_5 = heart_5;
+        // case 4:
+        //     heart_5 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Black_Heart.png"));
+        //     current_game_scene.heart_5 = heart_5;
+        //     break; 
 
-        case 3:
-            heart_4 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Black_Heart.png"));
-            current_game_scene.heart_4 = heart_4;
+        // case 3:
+        //     heart_4 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Black_Heart.png"));
+        //     current_game_scene.heart_4 = heart_4;
+        //     break;
 
         case 2:
-            heart_3 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Black_Heart.png"));
-            current_game_scene.heart_3 = heart_3;
+            var newHeart_3 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Black_Heart.png"));
+            newHeart_3.x = heart_3.x;
+            newHeart_3.y = heart_3.y;
+            // current_game_scene.heart_3 = heart_3;
+            heart_3.visible = false; 
+            newHeart_3.visible = true;
+            break;
 
         case 1:
-            heart_2 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Black_Heart.png"));
-            current_game_scene.heart_2 = heart_2;
-
+            var newheart_2 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Black_Heart.png"));
+            newHeart_2.x = heart_2.x;
+            newHeart_2.y = heart_2.y;
+            // current_game_scene.heart_3 = heart_3;
+            heart_2.visible = false;  
+            newHeart_2.visible = true;
+            break; 
+            
         default: // lost last heart
             end();
     }
@@ -1487,14 +1512,35 @@ function animate()
     
             document.addEventListener('keydown', keydownHandler);
 
+            console.log(hit);
             for (index = 0; index < zombies.length; index++)
             {
                 // move the enemy right
                 moveZombies(zombies[index]);
 
                 // UNCOMMENT THIS FOR COLLISION (AND LAG) (Currently shows collisions in times where it shouldn't)
-                if(collisionDetection(player, zombies[index])) {
-                    console.log("HIT")
+                if(collisionDetection(player, zombies[index]))
+                {
+                    if( !hit )
+                    {
+                        console.log("You got hit");
+                        takeDamage();
+                    }
+                    else
+                    {
+                        currentDate = new Date();
+
+                        if (currentDate.getSeconds() != currentTime)
+                        {
+                    
+                            currentTime = currentDate.getSeconds();
+                    
+                            if((startTime-currentTime) % 2 == 0)
+                            {
+                               hit = false;                             
+                            }
+                        }
+                    }
                 }
             }
             spawnZombies();
@@ -1760,6 +1806,7 @@ function inventoryPageHandler(e)
     upgrade_weapon.interative = true;
     upgrade_health.interative = true;
     quit_game_inventory.interative = true;
+
 
     // visually create the names and set them into the inventory box
     inventory_box_names = new PIXI.Text(
