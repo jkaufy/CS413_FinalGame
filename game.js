@@ -1386,7 +1386,6 @@ var zombieSpeed = .5;
 
 function spawnZombies()
 {
-
     currentDate = new Date();
 
     if (currentDate.getSeconds() != currentTime)
@@ -1402,8 +1401,6 @@ function spawnZombies()
         
         }
     }
-    
-    
 }
 
 
@@ -1836,11 +1833,15 @@ function keydownHandler(e)
 
 var bullets = [];
 
-function fireBullet(playerX, playerY) {
+function fireBullet(playerX, playerY) 
+{
     var bullet = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Bullet.png"));
+    
     bullet.position.x = playerX;
     bullet.position.y = playerY;
+    
     gameScene_1.addChild(bullet);
+    
     bullets.push(bullet);
     shootSound.play();
 }
