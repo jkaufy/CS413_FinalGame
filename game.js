@@ -12,7 +12,9 @@ PIXI.SCALE_MODES.DEFAULT = PIXI.SCALE_MODES.NEAREST;
 
 var beginWave = true;
 
+// Steven Start
 var bgMusicPlaying = false;
+// Steven End
 
 /*
     Create game scene variables 
@@ -59,11 +61,13 @@ var sprite1_bottom, sprite1_left_side, sprite1_right_side, sprite1_top;
 */
 var sprite2_bottom, sprite2_left_side, sprite2_right_side, sprite2_top;
 
+// Steven Start
 /*
     Create animation boolean variables
     (right_animation is set to true as default)
 */
 var left_animation = false, right_animation = true, up_animation = false, down_animation = false;
+// Steven End
 
 /*
     Create collision variables  
@@ -127,6 +131,7 @@ inventoryScene.visible = false;
 PIXI.loader
     .load(setup);
 
+// Steven Start
 var bgMusic = PIXI.sound.Sound.from({
     url: 'sound/bgMusic.wav',
     loop: true
@@ -139,7 +144,7 @@ var shootSound = PIXI.sound.Sound.from({
 var deathSound = PIXI.sound.Sound.from({
     url: 'sound/death.m4a',
 });
-
+// Steven End
 
 // This will initialize all our sprites and start our gameloop
 function setup()
@@ -155,7 +160,9 @@ function setup()
     credits_button = new PIXI.Sprite(PIXI.Texture.from("Sprites/Menu_Buttons/Sprite_Credits_Button.png"));
     female_character_choice = new PIXI.Sprite(PIXI.Texture.from("Sprites/Female_Player/Female_Player_L1.png"));
     male_character_choice = new PIXI.Sprite(PIXI.Texture.from("Sprites/Male_Player/Male_Player_R1.png"));
+    // Steven Start
     bgImage = new PIXI.Sprite(PIXI.Texture.from("Sprites/Backgrounds/Background_Image.png"));
+    // Steven End
 
     openingScene.addChild(bgImage);
     openingScene.addChild(start_button);
@@ -1248,22 +1255,27 @@ function attack()
     }
 }
 
-// Updates the nubmer zombies killed. 
+// Updates the number of zombies killed. 
 function updateDeath() {
     deathCount += 1;
     deathCountText.text = "Zombies Killed: " + deathCount + " / 100";
   }
 
+// Steven Start
+// Resets the death count
 function resetDeathCount() {
     deathCount = 0;
     deathCountText.text = "Zombies Killed: " + deathCount + " / 100";
 }
+// Steven End
   
 // all the code that will run at the end of the game
 function end()
 {
+    // Steven Start
     bgMusic.stop();
     bgMusicPlaying = false;
+    // Steven End
 
     resetDeathCount()
 
@@ -1282,7 +1294,9 @@ function quit()
     // if quit, show game over scene and get ride of game scene
     gameOverScene.interactive = true;
     gameOverScene.visible = true;
+    // Steven Start
     bgMusic.stop();
+    // Steven End
     bgMusicPlaying = false;
 
     deathCountText.text = "Zombies Killed: " + deathCount + " / 100";
@@ -1344,11 +1358,9 @@ function quit_gameover()
     renderer.render(openingScene);
 }
 
-
+// Steven Start
 // Function: collisionDetection(first, second)
 // Desc: Detects when two sprites collide.
-//       I got the idea for this function from:
-//       http://www.html5gamedevs.com/topic/24408-collision-detection/
 function collisionDetection(first, second) {
     var firstBounds = first.getBounds();
     var secondBounds = second.getBounds();
@@ -1358,6 +1370,7 @@ function collisionDetection(first, second) {
         && firstBounds.y + firstBounds.height > secondBounds.y
         && firstBounds.y < secondBounds.y + secondBounds.height;
 }
+// Steven End
 
 function finished()
 {
@@ -1557,7 +1570,7 @@ function animate()
                         }
                     }
                 }
-
+                // Steven Start
                 for (bIndex = 0; bIndex < bullets.length; bIndex++) {
                     if(bullets.length > 0) {
                         if(collisionDetection(bullets[bIndex], zombies[index-1])) {
@@ -1568,6 +1581,7 @@ function animate()
                         }
                     }
                 }
+                // Steven End
             }
             spawnZombies();
     
@@ -1787,10 +1801,12 @@ function keydownHandler(e)
         
     }
 
+    // Steven Start
     else if (e.keyCode == 76) //L //SHOOT
     {
         fireBullet(player.position.x, player.position.y);
     }
+    // Steven End
 
     else if ( e.keyCode == 74) // J // ATTACK 
     {
@@ -1834,6 +1850,7 @@ function keydownHandler(e)
     }
 }
 
+// Steven Start
 var bullets = [];
 
 function fireBullet(playerX, playerY) {
@@ -1844,6 +1861,7 @@ function fireBullet(playerX, playerY) {
     bullets.push(bullet);
     shootSound.play();
 }
+// Steven End
 
 function inventoryPageHandler(e)
 {
