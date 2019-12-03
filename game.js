@@ -41,13 +41,15 @@ var currentTime;
 var speedPotion = false;
 var speedPotionTime;
 var playerSpeed = 10;
+var inventoryPage = false;
+
+/*
+ Varaibles for zombies
+*/
 
 var zombies = [];
-var inventoryPage = false;
 var amount_of_zombies  = 1;
-
 var number_of_zombies = 0;
-
 var zombieSpeed = .5;
 
 
@@ -319,9 +321,7 @@ function setup()
                                     INVENTORY SET UP
     ***********************************************************************************/
     
-    inventory = {"coal" : 0, "copper" : 0, "iron" : 0, "gold" : 0, "healing potion" : 0, 
-                "armor potion" : 0, "weapon potion" : 0, "sterngth potion" : 0, 
-                "leaf of health" : 0};
+    /***********START OF JACOB AND SAMS CODE***********/
 
     let inventory_title = new PIXI.Text(
         'INVENTORY',
@@ -393,12 +393,15 @@ function setup()
 
     
     heal_button.interactive = true;
+    
+    // displays mouseover text when the heal button is hovered over
     heal_button.on("mouseover", () =>{
         heal_text.visible = true;
         health_text.visible = false;
         speed_potion_text.visible = false;
     })
     
+    // heals the player when someone presses the button
     heal_button.on("mousedown", () => {
         
         
@@ -440,12 +443,15 @@ function setup()
         /************** HANDLE SPEED BUTTON ************/
 
     speed_potion_button.interactive = true;
+    
+    // displays hover over text 
     speed_potion_button.on("mouseover", () =>{
         heal_text.visible = false;
         health_text.visible = false;
         speed_potion_text.visible = true;
     })
     
+    // adds speed potion and refreshes text
     speed_potion_button.on("mousedown", () => {
 
         activateSpeedPotion();
@@ -465,12 +471,15 @@ function setup()
      /************** HANDLE SPEED BUTTON ************/
 
      upgrade_health.interactive = true;
+    
+    // displays hover over text
      upgrade_health.on("mouseover", () =>{
          heal_text.visible = false;
          health_text.visible = true;
          speed_potion_text.visible = false;
      })
      
+    // upgrades hearts on button push
      upgrade_health.on("mousedown", () => {
 
         upgradeHealth();
@@ -521,6 +530,8 @@ function setup()
     inventory_box_names.anchor.x = .5;
     inventory_box_names.anchor.y = 0;
     inventoryScene.addChild(inventory_box_names);
+    
+     /***********END OF JACOB AND SAMS CODE***********/
 
 
     /***********************************************************************************
@@ -605,7 +616,8 @@ function setup()
     
     animate();
 }
-
+/***********START OF JACOBS CODE***********/
+// upgrades hearts
 function upgradeHealth()
 {
     if(leaves_of_healing_count >= 4)
@@ -615,6 +627,7 @@ function upgradeHealth()
     }
 }
 
+// refreshes the inventory text when updated
 function refreshInventory()
 {
     inventory_box_names.text = 
@@ -623,6 +636,7 @@ function refreshInventory()
         'Healing Leaves:    ' + leaves_of_healing_count +'\n\n ';
 }
 
+// activates speed potion
 function activateSpeedPotion()
 {
     if (speed_potion_count > 0)
@@ -634,6 +648,8 @@ function activateSpeedPotion()
         speedPotionTime = currentDate.getSeconds();
     }
 }
+
+/***********END OF JACOBS CODE***********/
 
 function start()
 {
@@ -873,176 +889,6 @@ function setUpSceneOne_Male()
     heart_2.visible = true;
     heart_3.visible = true;
 }
-
-// set up scene two
-function setUpSceneTwo()
-{
-    bg = new PIXI.Sprite(PIXI.Texture.from("Sprites/Backgrounds/Background_Level2_1.png"));
-    gameScene_2.addChild(bg);
-
-    deathCount = 0; 
-    deathCountText = new PIXI.Text("Zombies Killed: " + deathCount + " / 100", deathCountStyle);
-    deathCountText.position.x = 505;
-    gameScene_2.addChild(deathCountText);
-
-    setUpHearts(gameScene_2);
-
-    heart_2.visible = false;
-    heart_3.visible = false;
-    heart_4.visible = false;
-    heart_5.visible = false;
-    heart_6.visible = false;
-
-    switch(heart_max){
-        case 6:
-            heart_6.visible = true;
-        
-        case 5:
-            heart_5.visible = true;
-        
-        case 4: 
-            heart_4.visible = true;
-        
-        case 3:
-            heart_3.visible = true;
-
-        case 2:
-            heart_2.visible = true;
-
-        default:
-            heart_1.visible = true;
-    }
-
-    player = character_r;
-    player.x = 50;
-    player.y = 50;
-    gameScene_2.addChild(player);
-
-    gameScene_2.addChild(quit_game_button);
-    quit_game_button.interative = true;
-    quit_game_button.visible = true;
-
-    gameScene_1.visible = false;
-    gameScene_1.interactive = false;
-    gameScene_2.visible = true;
-    gameScene_2.interactive = true;
-    inventoryScene.visible = false;
-    inventoryScene.interative = false;
-}
-
-// set up scene three
-function setUpSceneThree()
-{
-    bg = new PIXI.Sprite(PIXI.Texture.from("Sprites/Backgrounds/Background_Level3_1.png"));
-    gameScene_3.addChild(bg);
-
-    deathCount = 0; 
-    deathCountText = new PIXI.Text("Zombies Killed: " + deathCount + " / 100", deathCountStyle);
-    deathCountText.position.x = 505;
-
-    gameScene_3.addChild(deathCountText);
-
-    setUpHearts(gameScene_3);
-
-    heart_2.visible = false;
-    heart_3.visible = false;
-    heart_4.visible = false;
-    heart_5.visible = false;
-    heart_6.visible = false;
-
-    switch(heart_max){
-        case 6:
-            heart_6.visible = true;
-        
-        case 5:
-            heart_5.visible = true;
-        
-        case 4: 
-            heart_4.visible = true;
-        
-        case 3:
-            heart_3.visible = true;
-
-        case 2:
-            heart_2.visible = true;
-
-        default:
-            heart_1.visible = true;
-    }
-
-    player = character_r;
-    player.x = 50;
-    player.y = 50;
-    gameScene_3.addChild(player);
-
-    gameScene_3.addChild(quit_game_button);
-    quit_game_button.interative = true;
-    quit_game_button.visible = true;
-
-    gameScene_2.visible = false;
-    gameScene_2.interactive = false;
-    gameScene_3.visible = true;
-    gameScene_3.interactive = true;
-    inventoryScene.visible = false;
-    inventoryScene.interative = false;
-}
-
-// set up scene four
-function setUpSceneFour()
-{
-    bg = new PIXI.Sprite(PIXI.Texture.from("Sprites/Backgrounds/Background_Level4_1.png"));
-    gameScene_4.addChild(bg);
-
-    deathCountText = new PIXI.Text("Zombies Killed: " + deathCount + " / 100", deathCountStyle);
-    deathCountText.position.x = 505;
-
-    gameScene_4.addChild(deathCountText);
-
-    setUpHearts(gameScene_4);
-
-    heart_2.visible = false;
-    heart_3.visible = false;
-    heart_4.visible = false;
-    heart_5.visible = false;
-    heart_6.visible = false;
-
-    switch(heart_max){
-        case 6:
-            heart_6.visible = true;
-        
-        case 5:
-            heart_5.visible = true;
-        
-        case 4: 
-            heart_4.visible = true;
-        
-        case 3:
-            heart_3.visible = true;
-
-        case 2:
-            heart_2.visible = true;
-
-        default:
-            heart_1.visible = true;
-    }
-
-    player = character_r;
-    player.x = 50;
-    player.y = 50;
-    gameScene_4.addChild(player);
-
-    gameScene_4.addChild(quit_game_button);
-    quit_game_button.interative = true;
-    quit_game_button.visible = true;
-
-    gameScene_3.visible = false;
-    gameScene_3.interactive = false;
-    gameScene_4.visible = true;
-    gameScene_4.interactive = true;
-    inventoryScene.visible = false;
-    inventoryScene.interative = false;
-}
-
 // add the appropriate amount of hearts to the game
 function setUpHearts(currentScene)
 {
@@ -1390,18 +1236,8 @@ function finished()
 
 /***************** Jacobs Code Start *****************/
 
-var zombies = [];
-var inventoryPage = false;
-var amount_of_zombies  = 1;
 
-var currentDate = new Date();
-var startTime = currentDate.getSeconds();
-var currentTime;
-
-var number_of_zombies = 0;
-
-var zombieSpeed = .5;
-
+//spawns zmobies
 function spawnZombies()
 {
     currentDate = new Date();
@@ -1422,7 +1258,7 @@ function spawnZombies()
 }
 
 
-
+// starts a wave of zombies
 function startWave ()
 {
 
@@ -1445,6 +1281,7 @@ function startWave ()
 
 }
 
+// moves all the zombies that are created
 function moveZombies( zombie )
 {
     if(zombie.position.x < player.position.x) {
@@ -1525,10 +1362,12 @@ function animate()
 
         else
         {
+            // if a speed potion is running
             if (speedPotion)
             {
                 currentTime = currentDate.getSeconds();
-
+                
+                // run speed potion for 10 seconds
                 if ((currentTime-speedPotionTime) % 10 == 0)
                 {
                     speedPotion = false;
@@ -1542,8 +1381,6 @@ function animate()
     
             if (beginWave == true)
             {
-                // count down the wave
-    
                 // begin wave
                 startWave();
             }
@@ -1602,138 +1439,6 @@ function animate()
         }
 
     }
-
-    else if(gameScene_2.interactive)
-    {
-        current_game_scene = gameScene_2;
-
-        // do something
-        if (inventoryPage)
-        {
-            quit_game_inventory.interactive = true;
-            quit_game_inventory.on('mousedown', quit);
-            
-            document.addEventListener('keydown', inventoryPageHandler);
-
-            renderer.render(inventoryScene);
-        }
-
-        else
-        {
-            quit_game_button.interactive = true;
-            quit_game_button.on('mousedown', quit);
-    
-            if (beginWave == true)
-            {
-                // count down the wave
-    
-                // begin wave
-                startWave();
-    
-            }
-    
-            document.addEventListener('keydown', keydownHandler);
-
-            for (index = 0; index < zombies.length; index++)
-            {
-                // move the enemy right
-                moveZombies(zombies[index]);
-            }
-            spawnZombies();
-    
-            renderer.render(gameScene_2);
-        }
-
-    }
-
-    else if(gameScene_3.interactive)
-    {
-        current_game_scene = gameScene_3;
-
-        // do something
-        if (inventoryPage)
-        {
-            quit_game_inventory.interactive = true;
-            quit_game_inventory.on('mousedown', quit);
-            
-            document.addEventListener('keydown', keydownHandler);
-
-            renderer.render(inventoryScene);
-        }
-
-        else
-        {
-            quit_game_button.interactive = true;
-            quit_game_button.on('mousedown', quit);
-    
-            if (beginWave == true)
-            {
-                // count down the wave
-    
-                // begin wave
-                startWave();
-    
-            }
-    
-            document.addEventListener('keydown', keydownHandler);
-
-            for (index = 0; index < zombies.length; index++)
-            {
-                // move the enemy right
-                moveZombies(zombies[index]);
-            }
-
-            spawnZombies();
-    
-            renderer.render(gameScene_3);
-        }
-
-    }
-
-    else if(gameScene_4.interactive)
-    {
-        current_game_scene = gameScene_4;
-
-        // do something
-        if (inventoryPage)
-        {
-            quit_game_inventory.interactive = true;
-            quit_game_inventory.on('mousedown', quit);
-            
-            document.addEventListener('keydown', inventoryPageHandler);
-
-            renderer.render(inventoryScene);
-        }
-
-        else
-        {
-            quit_game_button.interactive = true;
-            quit_game_button.on('mousedown', quit);
-    
-            if (beginWave == true)
-            {
-                // count down the wave
-    
-                // begin wave
-                startWave();
-    
-            }
-    
-            document.addEventListener('keydown', keydownHandler);
-
-            for (index = 0; index < zombies.length; index++)
-            {
-                // move the enemy right
-                moveZombies(zombies[index]);
-            }
-
-            spawnZombies();
-    
-            renderer.render(gameScene_4);
-        }
-
-    }
-
     else if(instructionScene.interactive)
     { 
         quit_instructions_button.interactive = true;
