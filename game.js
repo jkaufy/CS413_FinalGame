@@ -1252,14 +1252,20 @@ function attack()
 function updateDeath() {
     deathCount += 1;
     deathCountText.text = "Zombies Killed: " + deathCount + " / 100";
-    
   }
+
+function resetDeathCount() {
+    deathCount = 0;
+    deathCountText.text = "Zombies Killed: " + deathCount + " / 100";
+}
   
 // all the code that will run at the end of the game
 function end()
 {
     bgMusic.stop();
     bgMusicPlaying = false;
+
+    resetDeathCount()
 
     gameScene_1.interactive = false;
     // gameScene_2.interactive = false;
@@ -1557,8 +1563,8 @@ function animate()
                         if(collisionDetection(bullets[bIndex], zombies[index-1])) {
                             gameScene_1.removeChild(zombies[index-1]);
                             gameScene_1.removeChild(bullets[bIndex]);
-                            deathCount++;
                             deathSound.play();
+                            updateDeath();
                         }
                     }
                 }
