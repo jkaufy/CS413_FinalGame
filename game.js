@@ -664,7 +664,7 @@ function setUpSceneOne_Female()
     gameScene_1.addChild(bg);
 
     deathCountText = new PIXI.Text("Zombies Killed : " + deathCount + " / 100", deathCountStyle);
-    deathCountText.position.x = 505;
+    deathCountText.position.x = 450;
 
     gameScene_1.addChild(deathCountText);
 
@@ -763,7 +763,7 @@ function setUpSceneOne_Male()
     gameScene_1.addChild(bg);
 
     deathCountText = new PIXI.Text("Zombies Killed: " + deathCount + " / 100", deathCountStyle);
-    deathCountText.position.x = 505;
+    deathCountText.position.x = 450;
 
     gameScene_1.addChild(deathCountText);
 
@@ -1211,6 +1211,7 @@ function takeDamage()
 {
     heart_count --;
     
+<<<<<<< HEAD
     switch(heart_count){
         case 5:
             heart_6 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Black_Heart.png"));
@@ -1224,23 +1225,47 @@ function takeDamage()
             heart_4 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Black_Heart.png"));
             current_game_scene.heart_4 = heart_4;
 
+=======
+    switch(heart_count)
+    {
+>>>>>>> a220a31c8e46e3f280d5e09633b86226381a01d4
         case 2:
             heart_3 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Black_Heart.png"));
             current_game_scene.heart_3 = heart_3;
 
         case 1:
-            heart_2 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Black_Heart.png"));
-            current_game_scene.heart_2 = heart_2;
-
+            var newHeart_2 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Black_Heart.png"));
+            newHeart_2.x = heart_2.x;
+            newHeart_2.y = heart_2.y;
+            // current_game_scene.heart_3 = heart_3;
+            heart_2.visible = false;  
+            newHeart_2.visible = true;
+            break; 
+            
         default: // lost last heart
             end();
+    }
+}
+
+// Attack and kill function 
+function attack()
+{
+    console.log("Attack!");
+    for (index = 0; index < zombies.length; index++)
+    {
+        if(collisionDetection(player, zombies[index]))
+        {
+            updateDeath();
+            zombies[index].visible = false;
+        }
     }
 }
 
 // Updates the nubmer zombies killed. 
 function updateDeath() {
     deathCount += 1;
-    gameScoreText.text = "Zombies Killed: " + deathCount;
+    deathCountText.text = "Zombies Killed: " + deathCount + " / 100";
+    
   }
   
 // all the code that will run at the end of the game
@@ -1250,9 +1275,9 @@ function end()
     bgMusicPlaying = false;
 
     gameScene_1.interactive = false;
-    gameScene_2.interactive = false;
-    gameScene_3.interactive = false;
-    gameScene_4.interactive = false;
+    // gameScene_2.interactive = false;
+    // gameScene_3.interactive = false;
+    // gameScene_4.interactive = false;
     
     gameOverScene.visible = true;
     gameOverScene.interactive = true;
@@ -1267,14 +1292,17 @@ function quit()
     bgMusic.stop();
     bgMusicPlaying = false;
 
+    deathCountText.text = "Zombies Killed: " + deathCount + " / 100";
+    gameOverScene.addChild(deathCountText)
+
     gameScene_1.visible = false;
     gameScene_1.interactive = false;
-    gameScene_2.visible = false;
-    gameScene_2.interactive = false;
-    gameScene_3.visible = false;
-    gameScene_3.interactive = false;
-    gameScene_4.visible = false;
-    gameScene_4.interactive = false;
+    // gameScene_2.visible = false;
+    // gameScene_2.interactive = false;
+    // gameScene_3.visible = false;
+    // gameScene_3.interactive = false;
+    // gameScene_4.visible = false;
+    // gameScene_4.interactive = false;
 
     renderer.render(gameOverScene);
 }
@@ -1361,7 +1389,7 @@ var currentTime;
 
 var number_of_zombies = 0;
 
-var zombieSpeed = .2;
+var zombieSpeed = .5;
 
 function spawnZombies()
 {
@@ -1734,6 +1762,10 @@ function keydownHandler(e)
         fireBullet(player.position.x, player.position.y, mouseCoords);
     }
 
+    else if ( e.keyCode == 74) // J // ATTACK 
+    {
+        attack();
+    }
     else if (e.keyCode == 73) // I //INVENTORY 
     {
         if(inventoryPage)
