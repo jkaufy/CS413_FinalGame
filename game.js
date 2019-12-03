@@ -1211,24 +1211,8 @@ function takeDamage()
 {
     heart_count --;
     
-<<<<<<< HEAD
-    switch(heart_count){
-        case 5:
-            heart_6 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Black_Heart.png"));
-            current_game_scene.heart_6 = heart_6;
-
-        case 4:
-            heart_5 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Black_Heart.png"));
-            current_game_scene.heart_5 = heart_5;
-
-        case 3:
-            heart_4 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Black_Heart.png"));
-            current_game_scene.heart_4 = heart_4;
-
-=======
     switch(heart_count)
     {
->>>>>>> a220a31c8e46e3f280d5e09633b86226381a01d4
         case 2:
             heart_3 = new PIXI.Sprite(PIXI.Texture.from("Sprites/Items/Black_Heart.png"));
             current_game_scene.heart_3 = heart_3;
