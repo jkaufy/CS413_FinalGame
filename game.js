@@ -136,6 +136,10 @@ var shootSound = PIXI.sound.Sound.from({
     url: 'sound/ShootBullet.wav',
 });
 
+var deathSound = PIXI.sound.Sound.from({
+    url: 'sound/death.m4a',
+});
+
 
 // This will initialize all our sprites and start our gameloop
 function setup()
@@ -1553,6 +1557,8 @@ function animate()
                         if(collisionDetection(bullets[bIndex], zombies[index-1])) {
                             gameScene_1.removeChild(zombies[index-1]);
                             gameScene_1.removeChild(bullets[bIndex]);
+                            deathCount++;
+                            deathSound.play();
                         }
                     }
                 }
