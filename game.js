@@ -1,5 +1,3 @@
-/***************** Sams Code Start *****************/
-
 var GAME_WIDTH = 750; 
 var GAME_HEIGHT = 750;
 
@@ -28,10 +26,27 @@ var inventory = {}, inventoryScene, heal_button, armor_potion_button, weapon_pot
     speed_potion_button, upgrade_weapon, upgrade_health, upgrade_armor, description_box, 
     inventory_box, inventory_box_names, inventory_box_amount;
 
-var coal, copper, iron, gold, copper_bar, iron_bar, gold_bar, health_potion, weapon_potion, 
-    armor_potion, speed_potion, leaves_of_healing;
-
 var heal_text, armor_text, health_text, weapon_text, weapon_potion_text, armor_potion_text, speed_potion_text;
+
+var health_potion_count = 3;
+var speed_potion_count = 3;
+var leaves_of_healing_count = 4;
+
+var currentDate = new Date();
+var startTime = currentDate.getSeconds();
+var currentTime;
+
+var speedPotion = false;
+var speedPotionTime;
+var playerSpeed = 10;
+
+var zombies = [];
+var inventoryPage = false;
+var amount_of_zombies  = 1;
+
+var number_of_zombies = 0;
+
+var zombieSpeed = .5;
 
 
 /*
@@ -293,10 +308,10 @@ function setup()
     
     quit_instructions_button.interactive = false;
     
-    /***********************************************************************************
+   /***********************************************************************************
                                     INVENTORY SET UP
     ***********************************************************************************/
-
+    
     inventory = {"coal" : 0, "copper" : 0, "iron" : 0, "gold" : 0, "healing potion" : 0, 
                 "armor potion" : 0, "weapon potion" : 0, "sterngth potion" : 0, 
                 "leaf of health" : 0};
@@ -369,37 +384,32 @@ function setup()
     heal_text.visible = false;
     inventoryScene.addChild(heal_text);
 
+    
+    heal_button.interactive = true;
+    heal_button.on("mouseover", () =>{
+        heal_text.visible = true;
+        health_text.visible = false;
+        speed_potion_text.visible = false;
+    })
+    
+    heal_button.on("mousedown", () => {
+        
+        
+        if(health_potion_count > 0)
+        {
+            //heal();
 
-    /*********** ADD WEAPON POTION BUTTON **********/
-
-    weapon_potion_button = new PIXI.Sprite(PIXI.Texture.from("Sprites/Instruction_Buttons/Weapon_Potion.png"));
-    weapon_potion_button.position.x = heal_button.position.x;
-    weapon_potion_button.position.y = heal_button.position.y + 50;
-    weapon_potion_button.anchor.x = .5;
-    weapon_potion_button.anchor.y = .5;
-    inventoryScene.addChild(weapon_potion_button);
-
-    // when moused over 'healing button', this will display in the description box
-    weapon_potion_text = new PIXI.Text(
-        'use to increase weapon strenght\n for 10 seconds',
-        {fontFamily : "\"Courier New\", Courier, monospace",
-            fontSize: 20,
-            fontWeight: "bold",
-            fill : ["black"],
-            align : 'center'});
-
-    weapon_potion_text.x = description_box.position.x;
-    weapon_potion_text.y = description_box.position.y + 20;
-    weapon_potion_text.anchor.x = .5;
-    weapon_potion_text.anchor.y = 0;
-    weapon_potion_text.visible = false;
-    inventoryScene.addChild(weapon_potion_text);
+            health_potion_count--;
+            refreshInventory();
+        }
+    
+    })
 
     /*********** ADD SPEED POTION BUTTON **********/
 
     speed_potion_button = new PIXI.Sprite(PIXI.Texture.from("Sprites/Instruction_Buttons/Speed_Potion.png"));
-    speed_potion_button.position.x = weapon_potion_button.position.x;
-    speed_potion_button.position.y = weapon_potion_button.position.y + 50;
+    speed_potion_button.position.x = heal_button.position.x;
+    speed_potion_button.position.y = heal_button.position.y + 50;
     speed_potion_button.anchor.x = .5;
     speed_potion_button.anchor.y = .5;
     inventoryScene.addChild(speed_potion_button);
@@ -420,40 +430,46 @@ function setup()
     speed_potion_text.visible = false;
     inventoryScene.addChild(speed_potion_text);
 
-    /*********** ADD ARMOR POTION BUTTON **********/
+        /************** HANDLE SPEED BUTTON ************/
 
-    armor_potion_button = new PIXI.Sprite(PIXI.Texture.from("Sprites/Instruction_Buttons/Armor_Potion.png"));
-    armor_potion_button.position.x = speed_potion_button.position.x;
-    armor_potion_button.position.y = speed_potion_button.position.y + 50;
-    armor_potion_button.anchor.x = .5;
-    armor_potion_button.anchor.y = .5;
-    inventoryScene.addChild(armor_potion_button);
+    speed_potion_button.interactive = true;
+    speed_potion_button.on("mouseover", () =>{
+        heal_text.visible = false;
+        health_text.visible = false;
+        speed_potion_text.visible = true;
+    })
+    
+    speed_potion_button.on("mousedown", () => {
 
-    // when moused over 'healing button', this will display in the description box
-    armor_potion_text = new PIXI.Text(
-        'use to increase armor strenght\n for 10 seconds',
-        {fontFamily : "\"Courier New\", Courier, monospace",
-            fontSize: 20,
-            fontWeight: "bold",
-            fill : ["black"],
-            align : 'center'});
-
-    armor_potion_text.x = description_box.position.x;
-    armor_potion_text.y = description_box.position.y + 20;
-    armor_potion_text.anchor.x = .5;
-    armor_potion_text.anchor.y = 0;
-    armor_potion_text.visible = false;
-    inventoryScene.addChild(armor_potion_text);
-
+        activateSpeedPotion();
+        refreshInventory();
+    
+    })
     
     /*********** ADD HEALTH BUTTON **********/
 
     upgrade_health = new PIXI.Sprite(PIXI.Texture.from("Sprites/Instruction_Buttons/Health.png"));
-    upgrade_health.position.x = armor_potion_button.position.x;
-    upgrade_health.position.y = armor_potion_button.position.y + 50;
+    upgrade_health.position.x = speed_potion_button.position.x;
+    upgrade_health.position.y = speed_potion_button.position.y + 50;
     upgrade_health.anchor.x = .5;
     upgrade_health.anchor.y = .5;
     inventoryScene.addChild(upgrade_health);
+
+     /************** HANDLE SPEED BUTTON ************/
+
+     upgrade_health.interactive = true;
+     upgrade_health.on("mouseover", () =>{
+         heal_text.visible = false;
+         health_text.visible = true;
+         speed_potion_text.visible = false;
+     })
+     
+     upgrade_health.on("mousedown", () => {
+
+        upgradeHealth();
+        refreshInventory();
+     
+     })
 
     // when moused over 'healing button', this will display in the description box
     health_text = new PIXI.Text(
@@ -471,61 +487,6 @@ function setup()
     health_text.visible = false;
     inventoryScene.addChild(health_text);
 
-
-    /*********** ADD WEAPON BUTTON **********/
-
-    upgrade_weapon = new PIXI.Sprite(PIXI.Texture.from("Sprites/Instruction_Buttons/Weapon.png"));
-    upgrade_weapon.position.x = upgrade_health.position.x;
-    upgrade_weapon.position.y = upgrade_health.position.y + 50;
-    upgrade_weapon.anchor.x = .5;
-    upgrade_weapon.anchor.y = .5;
-    inventoryScene.addChild(upgrade_weapon);
-
-    // when moused over 'healing button', this will display in the description box
-    weapon_text = new PIXI.Text(
-        'use to upgrade weapon\nrequires 10 bars',
-        {fontFamily : "\"Courier New\", Courier, monospace",
-            fontSize: 20,
-            fontWeight: "bold",
-            fill : ["black"],
-            align : 'center'});
-
-    weapon_text.x = description_box.position.x;
-    weapon_text.y = description_box.position.y + 20;
-    weapon_text.anchor.x = .5;
-    weapon_text.anchor.y = 0;
-    weapon_text.visible = false;
-    inventoryScene.addChild(weapon_text);
-
-    /*********** ADD ARMOR BUTTON **********/
-
-    upgrade_armor = new PIXI.Sprite(PIXI.Texture.from("Sprites/Instruction_Buttons/Armor.png"));
-    upgrade_armor.position.x = upgrade_weapon.position.x;
-    upgrade_armor.position.y = upgrade_weapon.position.y + 50;
-    upgrade_armor.anchor.x = .5;
-    upgrade_armor.anchor.y = .5;
-    inventoryScene.addChild(upgrade_armor);
-
-    // when moused over 'healing button', this will display in the description box
-    armor_text = new PIXI.Text(
-        'use a upgrade armor\nrequires 10 ore',
-        {fontFamily : "\"Courier New\", Courier, monospace",
-            fontSize: 20,
-            fontWeight: "bold",
-            fill : ["black"],
-            align : 'center'});
-
-    armor_text.x = description_box.position.x;
-    armor_text.y = description_box.position.y + 20;
-    armor_text.anchor.x = .5;
-    armor_text.anchor.y = 0;
-    armor_text.visible = false;
-    inventoryScene.addChild(armor_text);
-
-
-
-
-
     quit_game_inventory = new PIXI.Sprite(PIXI.Texture.from("Sprites/Menu_Buttons/Sprite_Quit.png"));
     inventoryScene.addChild(quit_game_inventory);
     quit_game_inventory.anchor.x = .5;
@@ -535,8 +496,24 @@ function setup()
     
     quit_game_inventory.interactive = false;
 
-    inventoryScene.visible = false;
-    inventoryScene.interactive = false;
+
+    /***********HANDLE INVENOTRY TEC*****************/
+
+    inventory_box_names = new PIXI.Text(
+        'Health Potion:     '+ health_potion_count +'\n\n' +
+        'Speed Potion:      ' + speed_potion_count +'\n\n' +
+        'Healing Leaves:    ' + leaves_of_healing_count +'\n\n ',
+        {fontFamily : "\"Courier New\", Courier, monospace",
+            fontSize: 20,
+            fontWeight: "bold",
+            fill : ["black"],
+            align : 'left'});
+    
+    inventory_box_names.x = inventory_box.position.x - 50;
+    inventory_box_names.y = inventory_box.position.y + 20;
+    inventory_box_names.anchor.x = .5;
+    inventory_box_names.anchor.y = 0;
+    inventoryScene.addChild(inventory_box_names);
 
 
     /***********************************************************************************
@@ -620,6 +597,35 @@ function setup()
     quit_game_button.visible = false;
     
     animate();
+}
+
+function upgradeHealth()
+{
+    if(leaves_of_healing_count >= 4)
+    {
+        addHeart();
+        leaves_of_healing_count -= 4;
+    }
+}
+
+function refreshInventory()
+{
+    inventory_box_names.text = 
+        'Health Potion:     '+ health_potion_count +'\n\n' +
+        'Speed Potion:      ' + speed_potion_count +'\n\n' +
+        'Healing Leaves:    ' + leaves_of_healing_count +'\n\n ';
+}
+
+function activateSpeedPotion()
+{
+    if (speed_potion_count > 0)
+    {
+        playerSpeed = 20;
+        speedPotion = true;
+        speed_potion_count --;
+        currentDate =  new Date();
+        speedPotionTime = currentDate.getSeconds();
+    }
 }
 
 function start()
@@ -1161,24 +1167,24 @@ function addHeart()
 {
     heart_count ++;
     max_hearts ++;
-    leaves_of_healing -= 4;
 
     // if there is a 5th heart, add a 6th one
     switch(heart_count){
         case 6:
             heart_6.visible = true;
-
+            break;
         case 5:
             heart_5.visible = true;
-
+            break;
         case 4:
             heart_4.visible = true;
-
+            break;
         case 3:
             heart_3.visible = true;
-
+            break;
         default: // there was only one heart left, and so now there will be 2
             heart_2.visible = true;
+            break;
     }
 
     heal()
@@ -1252,20 +1258,14 @@ function attack()
 function updateDeath() {
     deathCount += 1;
     deathCountText.text = "Zombies Killed: " + deathCount + " / 100";
+    
   }
-
-function resetDeathCount() {
-    deathCount = 0;
-    deathCountText.text = "Zombies Killed: " + deathCount + " / 100";
-}
   
 // all the code that will run at the end of the game
 function end()
 {
     bgMusic.stop();
     bgMusicPlaying = false;
-
-    resetDeathCount()
 
     gameScene_1.interactive = false;
     // gameScene_2.interactive = false;
@@ -1491,20 +1491,34 @@ function animate()
             bullets[b].position.x += 10+Math.cos(5)*10;
             bullets[b].position.y += 10+Math.sin(5)*10;
           }
-
+        
+        currentDate = new Date();
+        
         // do something
         if (inventoryPage)
         {
             quit_game_inventory.interactive = true;
             quit_game_inventory.on('mousedown', quit);
             
-            //document.addEventListener('keydown', inventoryPageHandler);
+            document.addEventListener('keydown', inventoryPageHandler);
 
             renderer.render(inventoryScene);
         }
 
         else
         {
+            if (speedPotion)
+            {
+                currentTime = currentDate.getSeconds();
+
+                if ((currentTime-speedPotionTime) % 10 == 0)
+                {
+                    speedPotion = false;
+                    
+                    playerSpeed = 10;
+                }
+            }
+            
             quit_game_button.interactive = true;
             quit_game_button.on('mousedown', quit);
     
@@ -1523,7 +1537,6 @@ function animate()
                 // move the enemy right
                 moveZombies(zombies[index]);
 
-                console.log(hit);
                 for (index = 0; index < zombies.length; index++)
                 {
                     // move the enemy right
@@ -1534,12 +1547,10 @@ function animate()
                     {
                         if( !hit )
                         {
-                            console.log("You got hit");
                             takeDamage();
                         }
                         else
                         {
-                            currentDate = new Date();
     
                             if (currentDate.getSeconds() != currentTime)
                             {
@@ -1560,8 +1571,8 @@ function animate()
                         if(collisionDetection(bullets[bIndex], zombies[index-1])) {
                             gameScene_1.removeChild(zombies[index-1]);
                             gameScene_1.removeChild(bullets[bIndex]);
+                            deathCount++;
                             deathSound.play();
-                            updateDeath();
                         }
                     }
                 }
@@ -1746,7 +1757,7 @@ function keydownHandler(e)
         // Handles going off the screen the left 
         if( player.x > 30 )
         {
-            player.x -= 10;
+            player.x -= playerSpeed;
         }         
     }
 
@@ -1761,7 +1772,7 @@ function keydownHandler(e)
         // Handles going off the right of the screen 
         if( player.x < GAME_WIDTH - 30 )
         {         
-            player.x += 10;
+            player.x += playerSpeed;
         }
     }
 
@@ -1769,7 +1780,7 @@ function keydownHandler(e)
     {
         if( player.y < GAME_HEIGHT - 40)
         {
-            player.y += 10;
+            player.y += playerSpeed;
         }
     }
 
@@ -1778,56 +1789,41 @@ function keydownHandler(e)
         // Handles going off the top of the screen 
         if( player.y > 40 )
         {
-            player.y -= 10;
+            player.y -= playerSpeed;
         }
         
         
     }
-
-    else if (e.keyCode == 76) //L //SHOOT
-    {
-        fireBullet(player.position.x, player.position.y);
-    }
-
     else if ( e.keyCode == 74) // J // ATTACK 
     {
         attack();
     }
-
     else if (e.keyCode == 73) // I //INVENTORY 
     {
-        if(inventoryPage)
-        {
-            inventoryPage = false;
+        inventoryPage = true;
 
-            //inventoryScene.visible = false;
-            inventoryScene.interactive = false;
+        inventoryScene.visible = true;
+        //inventoryScene.interactive = true;
 
-            heal_button.interactive = false;
-            upgrade_armor.interative = false;
-            upgrade_button.interative = false;
-            upgrade_weapon.interative = false;
-            upgrade_health.interative = false;
+        renderer.render(inventoryScene);
 
-            renderer.render(current_game_scene);
-
-            document.removeEventListener('keydown', inventoryPageHandler);
-        }
-
-        else if(!inventoryPage)
-        {
-            inventoryPage = true;
-
-            inventoryScene.visible = true;
-            inventoryScene.interactive = true;
-
-            inventoryPageHandler();
-
-            renderer.render(inventoryScene);
-
-            document.removeEventListener('keydown', keydownHandler);
-        }
+        document.removeEventListener('keydown', keydownHandler);
         
+    }
+}
+
+function inventoryPageHandler(e)
+{
+    if (e.keyCode == 73)
+    {
+        inventoryPage = false;
+
+        //inventoryScene.visible = false;
+        //inventoryScene.interactive = false;
+
+        renderer.render(gameScene_1);
+
+        document.removeEventListener('keydown', inventoryPageHandler);
     }
 }
 
@@ -1848,157 +1844,14 @@ function fireBullet(playerX, playerY)
 
 function inventoryPageHandler(e)
 {
-    heal_button.interactive = true;
-    upgrade_armor.interative = true;
-   // upgrade_button.interative = true;
-    upgrade_weapon.interative = true;
-    upgrade_health.interative = true;
-    quit_game_inventory.interative = true;
+    if (e.keyCode == 73)
+    {
+        inventoryPage = false;
 
-    // visually create the names and set them into the inventory box
-    inventory_box_names = new PIXI.Text(
-        ' Coal:\n\n Copper:\n\n Iron:\n\n Gold:\n\n Health Potion:\n\n Armor Potion:\n\n Speed Potion:\n\n Weapon Potion:\n\n',
-        {fontFamily : "\"Courier New\", Courier, monospace",
-            fontSize: 20,
-            fontWeight: "bold",
-            fill : ["black"],
-            align : 'left'});
-    
-    inventory_box_names.x = inventory_box.position.x - 70;
-    inventory_box_names.y = inventory_box.position.y + 20;
-    inventory_box_names.anchor.x = .5;
-    inventory_box_names.anchor.y = 0;
-    inventoryScene.addChild(inventory_box_names);
+        renderer.render(gameScene_1);
 
-    // visually create amounts and put them next to the names
-    inventory_box_amount = new PIXI.Text(
-        toString(coal) + " \n\n" + toString(copper) + " \n\n" + toString(iron) + " \n\n" + toString(gold) 
-        + " \n\n" + toString(health_potion) + " \n\n" + toString(armor_potion) + " \n\n" + toString(speed_potion) 
-        + " \n\n" + toString(weapon_potion),
-        {fontFamily : "\"Courier New\", Courier, monospace",
-            fontSize: 20,
-            fill : ["black"],
-            align : 'right'});
-
-    inventory_box_amount.x = inventory_box.position.x + 70;
-    inventory_box_amount.y = inventory_box.position.y + 20;
-    inventory_box_amount.anchor.x = .5;
-    inventory_box_amount.anchor.y = 0;
-    inventoryScene.addChild(inventory_box_amount);
-
-
-
-    /******** HANDLE HEAL BUTTON *******/
-
-    heal_button.on("mouseover", () =>{
-        heal_text.visible = true;
-        armor_text.visible = false;
-        health_text.visible = false;
-        weapon_text.visible = false;
-        weapon_potion_text = false;
-        armor_potion_text = false;
-        speed_potion_text = false;
-    });
-
-    // only add a heart if there aren't already 6 possible and the player has 4 leaves of healing
-    heal_button.on("mousedown", () => {
-        if(leaf_of_healing > 3 && max_hearts < 6)
-        {
-            addHeart();
-        }
-    });
-
-
-    /******** HANDLE ARMOR BUTTON *******/
-    upgrade_armor.on("mouseover", () =>{
-        heal_text.visible = false;
-        armor_text.visible = true;
-        health_text.visible = false;
-        weapon_text.visible = false;
-        weapon_potion_text = false;
-        armor_potion_text = false;
-        speed_potion_text = false;
-    })
-
-    upgrade_armor.on("mousedown", () => {
-
-    })
-
-
-    /******** HANDLE WEAPNON BUTTON *******/
-    upgrade_weapon.on("mouseover", () =>{
-        heal_text.visible = false;
-        armor_text.visible = false;
-        health_text.visible = false;
-        weapon_text.visible = true;
-        weapon_potion_text.visible = false;
-        armor_potion_text.visible = false;
-        speed_potion_text.visible = false;
-    })
-
-    upgrade_weapon.on("mousedown", () => {
-
-    })
-
-    /******** HANDLE HEALTH BUTTON *******/
-    upgrade_health.on("mouseover", () =>{
-        heal_text.visible = false;
-        armor_text.visible = false;
-        health_text.visible = true;
-        weapon_text.visible = false;
-        weapon_potion_text.visible = false;
-        armor_potion_text.visible = false;
-        speed_potion_text.visible = false;
-    })
-
-    upgrade_health.on("mousedown", () => {
-
-    })
-
-    /******** HANDLE SPEED BUTTON *******/
-    speed_potion_button.on("mouseover", () =>{
-        heal_text.visible = false;
-        armor_text.visible = true;
-        health_text.visible = false;
-        weapon_text.visible = false;
-        weapon_potion_text.visible = false;
-        armor_potion_text.visible = false;
-        speed_potion_text.visible = true;
-    })
-
-    speed_potion_button.on("mousedown", () => {
-
-    })
-
-    /******** HANDLE ARMOR POTION BUTTON *******/
-    armor_potion_button.on("mouseover", () =>{
-        heal_text.visible = false;
-        armor_text.visible = false;
-        health_text.visible = false;
-        weapon_text.visible = false;
-        weapon_potion_text.visible = false;
-        armor_potion_text.visible = true;
-        speed_potion_text.visible = false;
-    })
-
-    armor_potion_button.on("mousedown", () => {
-
-    })
-
-    /******** HANDLE STRENGTH POTION BUTTON *******/
-    weapon_potion_button.on("mouseover", () =>{
-        heal_text.visible = false;
-        armor_text.visible = false;
-        health_text.visible = false;
-        weapon_text.visible = false;
-        weapon_potion_text.visible = true;
-        armor_potion_text.visible = false;
-        speed_potion_text.visible = false;
-    })
-
-    weapon_potion_button.on("mousedown", () => {
-
-    })
+        document.removeEventListener('keydown', inventoryPageHandler);
+    }
 
 }
 
