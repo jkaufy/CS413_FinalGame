@@ -151,7 +151,9 @@ function setup()
     credits_button = new PIXI.Sprite(PIXI.Texture.from("Sprites/Menu_Buttons/Sprite_Credits_Button.png"));
     female_character_choice = new PIXI.Sprite(PIXI.Texture.from("Sprites/Female_Player/Female_Player_L1.png"));
     male_character_choice = new PIXI.Sprite(PIXI.Texture.from("Sprites/Male_Player/Male_Player_R1.png"));
+    bgImage = new PIXI.Sprite(PIXI.Texture.from("Sprites/Backgrounds/Background_Image.png"));
 
+    openingScene.addChild(bgImage);
     openingScene.addChild(start_button);
     openingScene.addChild(instruction_button);
     openingScene.addChild(credits_button);
@@ -1742,14 +1744,14 @@ function keydownHandler(e)
 
     else if (e.keyCode == 76) //L //SHOOT
     {
-        mouseCoords = renderer.plugins.interaction.mouse.global;
-        fireBullet(player.position.x, player.position.y, mouseCoords);
+        fireBullet(player.position.x, player.position.y);
     }
 
     else if ( e.keyCode == 74) // J // ATTACK 
     {
         attack();
     }
+
     else if (e.keyCode == 73) // I //INVENTORY 
     {
         if(inventoryPage)
