@@ -1548,11 +1548,12 @@ function animate()
                     }
                 }
 
-                for (bIndex = 0; bIndex < bullets.length; bIndex++)
-                {
-                    // UNCOMMENT THIS FOR COLLISION (AND LAG) (Currently shows collisions in times where it shouldn't)
-                    if(collisionDetection(bullets[bIndex], zombies[index])) {
-                        gameScene_1.removeChild(zombies[index]);
+                for (bIndex = 0; bIndex < bullets.length; bIndex++) {
+                    if(bullets.length > 0) {
+                        if(collisionDetection(bullets[bIndex], zombies[index-1])) {
+                            gameScene_1.removeChild(zombies[index-1]);
+                            gameScene_1.removeChild(bullets[bIndex]);
+                        }
                     }
                 }
             }
